@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Live traffic cameras, Portland, OR (http://tripcheck.com/TextPages/CAMreport.asp?curRegion=0)</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        img {width: 300px;}
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2luOWlxdHpzMXZkOXVjbHlmcG1sZnhweiJ9.XjNsmZuuLyrydIWYcYP7rw.OTT9oT7CqAc9vZsnJLT51Q';
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/grafa/cin7t9y30001gajm055cpuj0a',
+center: [-122.67773866653444, 45.52245801087795],
+    zoom: 13.5
+});
+
+map.on('load', function () {
+    map.addSource('cameras', {
+        type: 'vector',
+        url: 'mapbox://grafa.9k8wcllw'
+    });
+    map.addLayer({
+        "id": "cameras",
+        "type": "symbol",
+        "source": "cameras",
+        "source-layer": "cameras",
+        "layout": {
+            "icon-image": "camera-12-red",
+            "icon-size": 0.75
+        }
+    });
+});
+
+
+// Create a popup, but don't add it to the map yet.
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false
+});
+
+map.on('mousemove', function(e) {
+    var features = map.queryRenderedFeatures(e.point, { layers: ['cameras'] });
+    // console.log(features);
+    // Change the cursor style as a UI indicator.
+    map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+
+    if (!features.length) {
+        popup.remove();
+        return;
+    }
+
+    var feature = features[0];
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    popup.setLngLat(feature.geometry.coordinates)
+        .setHTML('<img src=" '+ feature.properties["cctv-url"] + '" />')
+        .addTo(map);
+});
+</script>
+
+</body>
+</html>
