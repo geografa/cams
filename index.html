@@ -20,14 +20,15 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2luOWlxdHpzMXZkOXVjbHlmcG1sZ
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/grafa/cin7t9y30001gajm055cpuj0a',
-center: [-122.67773866653444, 45.52245801087795],
-    zoom: 13.5
+    center: [-122.66802129019352,45.541611872075975],
+    zoom: 12,
+    pitch: 45
 });
 
 map.on('load', function () {
     map.addSource('cameras', {
         type: 'vector',
-        url: 'mapbox://grafa.9k8wcllw'
+        url: 'mapbox://grafa.9vhrxtsk'
     });
     map.addLayer({
         "id": "cameras",
@@ -35,8 +36,8 @@ map.on('load', function () {
         "source": "cameras",
         "source-layer": "cameras",
         "layout": {
-            "icon-image": "camera-12-red",
-            "icon-size": 0.75
+            "icon-image": "cam",
+            "icon-size": 0.5
         }
     });
 });

@@ -1644,5 +1644,20 @@
         "cctv-other": "US97 at Butler Market Rd",
         "node-id": "004"
     }
+  },{
+    "type": "Feature",
+    "geometry": {
+      "type": "Point",
+      "coordinates": [-122.66661819780356,45.55417180572718]
+    },
+    "properties": {
+        "organization-id": "007",
+        "organization-name": "RAFA",
+        "device-id": "007",
+        "device-name": "Rafa Cam",
+        "cctv-url": "http://73.96.60.71:8888/out.jpg",
+        "cctv-other": "Mason Williams",
+        "node-id": "007"
+    }
   }]
 }
