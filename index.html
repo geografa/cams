@@ -6,6 +6,7 @@
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.css' rel='stylesheet' />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> 
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
@@ -83,9 +84,26 @@ function getQueryVariable(variable) {
 var fsToken = getQueryVariable('code');
 
 // console.log('https://api.foursquare.com/v2/users/self/venuelikes?oauth_token=' + fsToken + '&v=20161020');
+var API_ENDPOINT = 'https://api.foursquare.com/v2/users/self/venuelikes' +
+  '&oauth_token=' + fsToken +
+  '&v=20130815' +
+  '&ll=LATLON' +
+  '&query=coffee' +
+  '&callback=?';
 
+$.getJSON(API_ENDPOINT, function(result, status) {
 
-console.log('https://api.foursquare.com/v2/users/self/checkins?oauth_token=' + fsToken + '&v=20161020');
+    if (status !== 'success') return alert('Request to Foursquare failed');
+
+    // Transform each venue result into a marker on the map.
+    for (var i = 0; i < result.response.venues.length; i++) {
+      var venue = result.response.venues[i];
+      console.log(venue);
+    }
+
+});
+// console.log('API_ENDPOINT');
+
 </script>
 
 </body>
