@@ -6,7 +6,6 @@
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.css' rel='stylesheet' />
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> 
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
@@ -68,36 +67,6 @@ map.on('mousemove', function(e) {
         .setHTML('<img src=" '+ feature.properties["cctv-url"] + '" />')
         .addTo(map);
 });
-
-function getQueryVariable(variable) {
-    var query = window.location.search.substring(1);
-    var vars = query.split('&');
-    for (var i = 0; i < vars.length; i++) {
-        var pair = vars[i].split('=');
-        if (decodeURIComponent(pair[0]) == variable) {
-            return decodeURIComponent(pair[1]);
-        }
-    }
-    console.log('Query variable %s not found', variable);
-}
-
-var fsToken = getQueryVariable('code');
-
-// https://api.foursquare.com/v2/users/self/venuelikes?oauth_token=UKHUBFFFREWGYFLKEJ0IY2WWFYKOTPSLC54N4WD0YO5Q0IIA&v=20161020
-// https://api.foursquare.com/v2/venues/search?ll=40.7,-74&oauth_token=UKHUBFFFREWGYFLKEJ0IY2WWFYKOTPSLC54N4WD0YO5Q0IIA&v=20161020
-
-
-
-var API_ENDPOINT = 'https://api.foursquare.com/v2/venues/search?ll=40.7,-74' +
-  '&access_token=' + fsToken +
-  '&v=20161020';
-
-$.getJSON(API_ENDPOINT, { dataType: "JSONP" }, function(json){ 
-        var parsed = JSON.parse(json);
-        console.log(parsed);
-        access_token = parsed.access_token;
-    });
-// console.log('API_ENDPOINT');
 
 </script>
 
