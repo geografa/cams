@@ -84,11 +84,13 @@ function getQueryVariable(variable) {
 var fsToken = getQueryVariable('code');
 
 // https://api.foursquare.com/v2/users/self/venuelikes?oauth_token=UKHUBFFFREWGYFLKEJ0IY2WWFYKOTPSLC54N4WD0YO5Q0IIA&v=20161020
+https://api.foursquare.com/v2/venues/search?ll=40.7,-74&oauth_token=UKHUBFFFREWGYFLKEJ0IY2WWFYKOTPSLC54N4WD0YO5Q0IIA&v=20161020
 
 
-var API_ENDPOINT = 'https://api.foursquare.com/v2/users/self/venuelikes?' +
+
+var API_ENDPOINT = 'https://api.foursquare.com/v2/venues/search?ll=40.7,-74' +
   '&oauth_token=' + fsToken +
-  '&v=20130815';
+  '&v=20161020';
 
 $.getJSON(API_ENDPOINT, function(result, status) {
 
