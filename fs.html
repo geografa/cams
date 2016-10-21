@@ -25,7 +25,7 @@ var fsToken = getQueryVariable('access_token');
 
 
 var API_ENDPOINT = 'https://api.foursquare.com/v2/venues/search?ll=40.7,-74' +
-  '&access_token=' + fsToken +
+  '&oauth_token=' + fsToken +
   '&v=20161020';
 
 $.getJSON(API_ENDPOINT, { dataType: "JSONP" }, function(json){ 
@@ -34,6 +34,8 @@ $.getJSON(API_ENDPOINT, { dataType: "JSONP" }, function(json){
         access_token = parsed.access_token;
     });
 // console.log('API_ENDPOINT');
+
+
 
 </script>
 
