@@ -71,7 +71,7 @@ map.on('mousemove', function(e) {
 
 function getQueryVariable(variable) {
     var query = window.location.search.substring(1);
-    var vars = query.split('&');
+    var vars = query.split('#');
     for (var i = 0; i < vars.length; i++) {
         var pair = vars[i].split('=');
         if (decodeURIComponent(pair[0]) == variable) {
@@ -81,7 +81,7 @@ function getQueryVariable(variable) {
     console.log('Query variable %s not found', variable);
 }
 
-var fsToken = getQueryVariable('code');
+var fsToken = getQueryVariable('access_token');
 
 // https://api.foursquare.com/v2/users/self/venuelikes?oauth_token=UKHUBFFFREWGYFLKEJ0IY2WWFYKOTPSLC54N4WD0YO5Q0IIA&v=20161020
 // https://api.foursquare.com/v2/venues/search?ll=40.7,-74&oauth_token=UKHUBFFFREWGYFLKEJ0IY2WWFYKOTPSLC54N4WD0YO5Q0IIA&v=20161020
