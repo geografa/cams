@@ -86,10 +86,7 @@ var fsToken = getQueryVariable('code');
 // console.log('https://api.foursquare.com/v2/users/self/venuelikes?oauth_token=' + fsToken + '&v=20161020');
 var API_ENDPOINT = 'https://api.foursquare.com/v2/users/self/venuelikes' +
   '&oauth_token=' + fsToken +
-  '&v=20130815' +
-  '&ll=LATLON' +
-  '&query=coffee' +
-  '&callback=?';
+  '&v=20130815';
 
 $.getJSON(API_ENDPOINT, function(result, status) {
 
