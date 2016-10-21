@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>FS</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script> 
+</head>
+<body>
+<script>
+
+function getQueryVariable(variable)
+{
+       var query = window.location.search.substring(1);
+       console.log(query);
+       var vars = query.split("&");
+       for (var i=0;i<vars.length;i++) {
+               var pair = vars[i].split("=");
+               if(pair[0] == variable){return pair[1];}
+       }
+       return(false);
+}
+
+var fsToken = getQueryVariable('access_token');
+
+
+var API_ENDPOINT = 'https://api.foursquare.com/v2/venues/search?ll=40.7,-74' +
+  '&access_token=' + fsToken +
+  '&v=20161020';
+
+$.getJSON(API_ENDPOINT, { dataType: "JSONP" }, function(json){ 
+        var parsed = JSON.parse(json);
+        console.log(parsed);
+        access_token = parsed.access_token;
+    });
+// console.log('API_ENDPOINT');
+
+</script>
+
+</body>
+</html>
