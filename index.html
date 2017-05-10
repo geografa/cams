@@ -4,8 +4,8 @@
     <meta charset='utf-8' />
     <title>Live traffic cameras, Portland, OR (http://tripcheck.com/TextPages/CAMreport.asp?curRegion=0)</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.17.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.css' rel='stylesheet' />
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
@@ -19,27 +19,10 @@
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2luOWlxdHpzMXZkOXVjbHlmcG1sZnhweiJ9.XjNsmZuuLyrydIWYcYP7rw.OTT9oT7CqAc9vZsnJLT51Q';
 var map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/grafa/cin7t9y30001gajm055cpuj0a',
+    style: 'mapbox://styles/grafa/cj2jexotj002o2rqon6det1v4',
     center: [-122.66802129019352,45.541611872075975],
     zoom: 12,
     pitch: 45
-});
-
-map.on('load', function () {
-    map.addSource('cameras', {
-        type: 'vector',
-        url: 'mapbox://grafa.9vhrxtsk'
-    });
-    map.addLayer({
-        "id": "cameras",
-        "type": "symbol",
-        "source": "cameras",
-        "source-layer": "cameras",
-        "layout": {
-            "icon-image": "cam",
-            "icon-size": 0.5
-        }
-    });
 });
 
 
