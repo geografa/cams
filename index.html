@@ -14,8 +14,13 @@
 </head>
 <body>
 
+
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.css' type='text/css' />
 <div id='map'></div>
+
 <script>
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ';
 var map = new mapboxgl.Map({
     container: 'map',
@@ -25,7 +30,6 @@ var map = new mapboxgl.Map({
     pitch: 45,
     hash: true
 });
-
 
 // Create a popup, but don't add it to the map yet.
 var popup = new mapboxgl.Popup({
@@ -51,6 +55,11 @@ map.on('mousemove', function(e) {
         .setHTML('<img src=" '+ feature.properties["cctv-url"] + '" />')
         .addTo(map);
 });
+
+map.addControl(new MapboxDirections({
+    accessToken: mapboxgl.accessToken
+}), 'top-left');
+
 
 </script>
 
