@@ -22,6 +22,13 @@
 <script>
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ';
+
+var directions = new MapboxDirections({
+  accessToken: mapboxgl.accessToken,
+  unit: 'metric',
+  profile: 'driving-traffic'
+});
+
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/grafa/cj2jexotj002o2rqon6det1v4',
@@ -61,6 +68,11 @@ map.addControl(new MapboxDirections({
 }), 'top-left');
 
 
+directions.on('route', function () {
+  map.setPaintProperty('directions-route-line', 'line-color', '#00ffdd');
+  map.setPaintProperty('directions-route-line', 'line-width', 10);
+  map.setPaintProperty('directions-route-line', 'line-opacity', 0.8);
+})
 </script>
 
 </body>
