@@ -4,8 +4,8 @@
     <meta charset='utf-8' />
     <title>Live traffic cameras, Portland, OR (http://tripcheck.com/TextPages/CAMreport.asp?curRegion=0)</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.37.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.39.1/mapbox-gl.css' rel='stylesheet' />
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
@@ -31,7 +31,7 @@ var directions = new MapboxDirections({
 
 var map = new mapboxgl.Map({
     container: 'map',
-    style: 'mapbox://styles/grafa/cj2jexotj002o2rqon6det1v4',
+    style: 'mapbox://styles/grafa/cj6icrjym4lrs2rljruycazub',
     center: [-122.66802129019352,45.541611872075975],
     zoom: 12,
     pitch: 45,
@@ -45,7 +45,7 @@ var popup = new mapboxgl.Popup({
 });
 
 map.on('mousemove', function(e) {
-    var features = map.queryRenderedFeatures(e.point, { layers: ['cameras'] });
+    var features = map.queryRenderedFeatures(e.point, { layers: ['cctvinventory'] });
     // console.log(features);
     // Change the cursor style as a UI indicator.
     map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
