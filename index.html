@@ -8,34 +8,75 @@
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css' rel='stylesheet' />
     <style>
         body { margin:0; padding:0; }
-        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #map {
+            position:absolute;
+            top:0;
+            bottom:0;
+            width: 100%;
+        }
+        
+        .mapboxgl-popup-content {
+            background-color: #333;
+            color: #fff;
+        }
+
+        .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+            border-bottom-color: #333;
+        }
+        .mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip {;
+            border-left: #333;
+            border-bottom-color: #333;
+        }
+        .mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
+            border-right: #333;
+            border-bottom-color: #333;
+        }
+        .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+            border-top-color: #333;
+        }
+        .mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip {one;
+            border-left: #333;
+            border-top-color: #333;
+        }
+        .mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {ne;
+            border-right: #333;
+            border-top-color: #333;
+        }
+        .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+            border-right-color: #333;
+        }
+        .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+            border-left-color: #333;
+        }
         img {width: 300px;}
     </style>
 </head>
 <body>
-
-
-<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.js'></script>
-<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-directions/v3.1.1/mapbox-gl-directions.css' type='text/css' />
-<div id='map'></div>
-
+<div id="map"></div>
 <script>
+function loadGeoJSON() {
+    let center = map.getCenter('features').lng + ',' + map.getCenter('features').lat;
+    var url = 'https://api.mapbox.com/directions-matrix/v1/mapbox/driving/' + center + ';-122.67773866653444,45.52245801087795;-122.48,37.73?access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oydGJoajI5MDA1bjJxbzZzZjd5MXl3NSJ9.vNVFm6NsFzeX0AGSjFHpqg';
+    var req = new XMLHttpRequest();
+    req.responseType = 'json';
+    req.open('GET', url, true);
+    req.onload  = function() {
+       var jsonResponse = req.response;
+       // document.getElementById("demo").innerHTML = jsonResponse.features;
+       // do something with jsonResponse
+       console.log(jsonResponse);
+    };
+    req.send();
+}
 
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ';
-
-var directions = new MapboxDirections({
-  accessToken: mapboxgl.accessToken,
-  unit: 'metric',
-  profile: 'driving-traffic'
-});
 
 var map = new mapboxgl.Map({
     container: 'map',
     style: 'mapbox://styles/grafa/cj6icrjym4lrs2rljruycazub',
-    center: [-122.66802129019352,45.541611872075975],
-    zoom: 12,
-    pitch: 45,
-    hash: true
+    center: [-122.67143949070442,45.54722707150694],
+    zoom: 11,
+    minZoom: 10
 });
 
 // Create a popup, but don't add it to the map yet.
@@ -44,10 +85,29 @@ var popup = new mapboxgl.Popup({
     closeOnClick: false
 });
 
-map.on('mousemove', function(e) {
+map.on('click', function (e) {
     var features = map.queryRenderedFeatures(e.point, { layers: ['cctvinventory'] });
     // console.log(features);
     // Change the cursor style as a UI indicator.
+    var lng = e.lngLat.lng,
+        lat = e.lngLat.lat;
+
+    var url = 'https://api.mapbox.com/directions-matrix/v1/mapbox/driving-traffic/' + lng +','+ lat + ';-122.58458586634072,45.58556897518142?sources=0&destinations=all&access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oydGJoajI5MDA1bjJxbzZzZjd5MXl3NSJ9.vNVFm6NsFzeX0AGSjFHpqg';
+
+    var req = new XMLHttpRequest();
+    req.responseType = 'json';
+    req.open('GET', url, true);
+    req.onload  = function() {
+       var jsonResponse = req.response;
+       // document.getElementById("demo").innerHTML = jsonResponse.features;
+       // do something with jsonResponse
+       var eta = Math.ceil(jsonResponse.durations[0][1]/60);
+
+       document.getElementById('pop').innerHTML = '<img src=" '+ feature.properties["cctv-url"] + '" /><br><h2>' + 
+         eta + ' min to PDX</h2>';
+    };
+    req.send();
+
     map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
     if (!features.length) {
@@ -56,23 +116,17 @@ map.on('mousemove', function(e) {
     }
 
     var feature = features[0];
-    // Populate the popup and set its coordinates
-    // based on the feature found.
-    popup.setLngLat(feature.geometry.coordinates)
-        .setHTML('<img src=" '+ feature.properties["cctv-url"] + '" />')
+    var coords = feature.geometry.coordinates;
+    
+    if (!features.length) {
+        popup.remove();
+        return;
+    }
+    popup.setLngLat(coords)
+        .setHTML('<div id ="pop"><div>')
         .addTo(map);
 });
 
-map.addControl(new MapboxDirections({
-    accessToken: mapboxgl.accessToken
-}), 'top-left');
-
-
-directions.on('route', function () {
-  map.setPaintProperty('directions-route-line', 'line-color', '#00ffdd');
-  map.setPaintProperty('directions-route-line', 'line-width', 10);
-  map.setPaintProperty('directions-route-line', 'line-opacity', 0.8);
-})
 </script>
 
 </body>
