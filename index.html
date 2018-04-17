@@ -204,10 +204,13 @@ map.on('click', 'cctvinventory', function (e) {
     req.responseType = 'json';
     req.open('GET', url, true);
     req.onload  = function() {
-        var jsonResponse = req.response;
-        // do something with jsonResponse
-        var eta = Math.ceil(jsonResponse.durations[0][1]/60);
-        document.getElementById('pop').innerHTML = '<img src=" '+ feature.properties["cctv-url"] + '" /><br><h2>' + eta + ' min to destination</h2>';
+       var jsonResponse = req.response;
+       // document.getElementById("demo").innerHTML = jsonResponse.features;
+       // do something with jsonResponse
+       var eta = Math.ceil(jsonResponse.durations[0][1]/60);
+
+       document.getElementById('pop').innerHTML = '<img src=" '+ feature.properties["cctv-url"] + '" /><br><h2>' + 
+         eta + ' min to PDX International</h2>';
     };
     req.send();
 
