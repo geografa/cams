@@ -6,75 +6,70 @@
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
     <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.js'></script>
     <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.44.0/mapbox-gl.css' rel='stylesheet' />
-
-    <script src='https://api.tiles.mapbox.com/mapbox.js/plugins/turf/v3.0.11/turf.min.js'></script>
-    <script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.js'></script>
-    <link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.css' type='text/css'/>
-
     <style>
-    body { margin:0; padding:0; }
-    #map {
-        position:absolute;
-        top:0;
-        bottom:0;
-        width: 100%;
-    }
+        body { margin:0; padding:0; }
+        #map {
+            position:absolute;
+            top:0;
+            bottom:0;
+            width: 100%;
+        }
+        
+        .mapboxgl-popup-content {
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+        }
 
-    .mapboxgl-popup-content {
-        background-color: #333;
-        color: #fff;
-        text-align: center;
-    }
-
-    .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
-        border-bottom-color: #333;
-    }
-    .mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip {;
-        border-left: #333;
-        border-bottom-color: #333;
-    }
-    .mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
-        border-right: #333;
-        border-bottom-color: #333;
-    }
-    .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
-        border-top-color: #333;
-    }
-    .mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip {one;
-        border-left: #333;
-        border-top-color: #333;
-    }
-    .mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {ne;
-        border-right: #333;
-        border-top-color: #333;
-    }
-    .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
-        border-right-color: #333;
-    }
-    .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
-        border-left-color: #333;
-    }
-    img {width: 300px;}
-    .coordinates {
-        background: rgba(0,0,0,0.5);
-        color: #fff;
-        position: absolute;
-        bottom: 10px;
-        left: 10px;
-        padding:5px 10px;
-        margin: 0;
-        font-size: 11px;
-        line-height: 18px;
-        border-radius: 3px;
-        display: none;
-    }
+        .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
+            border-bottom-color: #333;
+        }
+        .mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip {;
+            border-left: #333;
+            border-bottom-color: #333;
+        }
+        .mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
+            border-right: #333;
+            border-bottom-color: #333;
+        }
+        .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+            border-top-color: #333;
+        }
+        .mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip {one;
+            border-left: #333;
+            border-top-color: #333;
+        }
+        .mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {ne;
+            border-right: #333;
+            border-top-color: #333;
+        }
+        .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
+            border-right-color: #333;
+        }
+        .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
+            border-left-color: #333;
+        }
+        img {width: 300px;}
     </style>
 </head>
 <body>
-    <div id="map"></div>
-    <pre id='coordinates' class='coordinates'></pre>
-
+<div id="map"></div>
 <script>
+function loadGeoJSON() {
+    let center = map.getCenter('features').lng + ',' + map.getCenter('features').lat;
+    var url = 'https://api.mapbox.com/directions-matrix/v1/mapbox/driving/' + center + ';-122.67773866653444,45.52245801087795;-122.48,37.73?access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oydGJoajI5MDA1bjJxbzZzZjd5MXl3NSJ9.vNVFm6NsFzeX0AGSjFHpqg';
+    var req = new XMLHttpRequest();
+    req.responseType = 'json';
+    req.open('GET', url, true);
+    req.onload  = function() {
+       var jsonResponse = req.response;
+       // document.getElementById("demo").innerHTML = jsonResponse.features;
+       // do something with jsonResponse
+       console.log(jsonResponse);
+    };
+    req.send();
+}
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ';
 
 var map = new mapboxgl.Map({
@@ -85,120 +80,20 @@ var map = new mapboxgl.Map({
     minZoom: 10
 });
 
-// Holds mousedown state for events. if this
-// flag is active, we move the point on `mousemove`.
-var isDragging;
-
-// Is the cursor over a point? if this
-// flag is active, we listen for a mousedown event.
-var isCursorOverPoint;
-
-var canvas = map.getCanvasContainer();
-var coordinates = document.getElementById('coordinates');
-
-var geojson = {
-    "type": "FeatureCollection",
-    "features": [{
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [-122.67773866653444,45.52245801087795]
-        }
-    }]
-};
-
-function mouseDown() {
-    if (!isCursorOverPoint) return;
-
-    isDragging = true;
-
-    // Set a cursor indicator
-    canvas.style.cursor = 'grab';
-
-    // Mouse events
-    map.on('mousemove', onMove);
-    map.once('mouseup', onUp);
-}
-
-function onMove(e) {
-    if (!isDragging) return;
-    var coords = e.lngLat;
-
-    // Set a UI indicator for dragging.
-    canvas.style.cursor = 'grabbing';
-
-    // Update the Point feature in `geojson` coordinates
-    // and call setData to the source layer `point` on it.
-    geojson.features[0].geometry.coordinates = [coords.lng, coords.lat];
-    map.getSource('point').setData(geojson);
-}
-
-function onUp(e) {
-    if (!isDragging) return;
-    var coords = e.lngLat;
-
-    // Print the coordinates of where the point had
-    // finished being dragged to on the map.
-    coordinates.style.display = 'block';
-    coordinates.innerHTML = 'Longitude: ' + coords.lng + '<br />Latitude: ' + coords.lat;
-    canvas.style.cursor = '';
-    isDragging = false;
-
-    // Unbind mouse events
-    map.off('mousemove', onMove);
-}
-
 // Create a popup, but don't add it to the map yet.
 var popup = new mapboxgl.Popup({
     closeButton: false,
-    closeOnClick: true
+    closeOnClick: false
 });
 
-map.on('load', function() {
-    // Add a single point to the map
-    map.addSource('point', {
-        "type": "geojson",
-        "data": geojson
-    });
-
-    map.addLayer({
-        "id": "point",
-        "type": "circle",
-        "source": "point",
-        "paint": {
-            "circle-radius": 10,
-            "circle-color": "#f30"
-        }
-    });
-
-    // When the cursor enters a feature in the point layer, prepare for dragging.
-    map.on('mouseenter', 'point', function() {
-        map.setPaintProperty('point', 'circle-color', '#3dea3a');
-        canvas.style.cursor = 'move';
-        isCursorOverPoint = true;
-        map.dragPan.disable();
-    });
-
-    map.on('mouseleave', 'point', function() {
-        map.setPaintProperty('point', 'circle-color', '#f30');
-        canvas.style.cursor = '';
-        isCursorOverPoint = false;
-        map.dragPan.enable();
-    });
-
-    map.on('mousedown', mouseDown);
-});
-
-map.on('click', 'cctvinventory', function (e) {
+map.on('click', function (e) {
     var features = map.queryRenderedFeatures(e.point, { layers: ['cctvinventory'] });
+    // console.log(features);
     // Change the cursor style as a UI indicator.
     var lng = e.lngLat.lng,
-    lat = e.lngLat.lat;
+        lat = e.lngLat.lat;
 
-    var destination = map.getSource('point')._data.features[0].geometry.coordinates;
-    var dest = destination.toString();
-
-    var url = 'https://api.mapbox.com/directions-matrix/v1/mapbox/driving-traffic/' + lng +','+ lat + ';' + dest +'?sources=0&destinations=all&access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oydGJoajI5MDA1bjJxbzZzZjd5MXl3NSJ9.vNVFm6NsFzeX0AGSjFHpqg';
+    var url = 'https://api.mapbox.com/directions-matrix/v1/mapbox/driving-traffic/' + lng +','+ lat + ';-122.58458586634072,45.58556897518142?sources=0&destinations=all&access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oydGJoajI5MDA1bjJxbzZzZjd5MXl3NSJ9.vNVFm6NsFzeX0AGSjFHpqg';
 
     var req = new XMLHttpRequest();
     req.responseType = 'json';
@@ -210,7 +105,7 @@ map.on('click', 'cctvinventory', function (e) {
        var eta = Math.ceil(jsonResponse.durations[0][1]/60);
 
        document.getElementById('pop').innerHTML = '<img src=" '+ feature.properties["cctv-url"] + '" /><br><h2>' + 
-         eta + ' min to PDX International</h2>';
+         eta + ' min to PDX</h2>';
     };
     req.send();
 
@@ -223,7 +118,7 @@ map.on('click', 'cctvinventory', function (e) {
 
     var feature = features[0];
     var coords = feature.geometry.coordinates;
-
+    
     if (!features.length) {
         popup.remove();
         return;
