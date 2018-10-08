@@ -57,7 +57,7 @@
 <script>
 function loadGeoJSON() {
     let center = map.getCenter('features').lng + ',' + map.getCenter('features').lat;
-    var url = 'https://api.mapbox.com/directions-matrix/v1/mapbox/driving/' + center + ';-122.67773866653444,45.52245801087795;-122.48,37.73?access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oydGJoajI5MDA1bjJxbzZzZjd5MXl3NSJ9.vNVFm6NsFzeX0AGSjFHpqg';
+    var url = 'https://api.mapbox.com/directions-matrix/v1/mapbox/driving/' + center + ';-122.67773866653444,45.52245801087795;-122.48,37.73?access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ';
     var req = new XMLHttpRequest();
     req.responseType = 'json';
     req.open('GET', url, true);
