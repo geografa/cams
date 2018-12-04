@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Add a isochrone</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<div id='instructions'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ';
+var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/mapbox/streets-v10', //stylesheet location
+    center: [-122.66206798535438,45.52363989427619], // starting position
+    zoom: 12, // starting zoom
+});
+
+// initialize the map canvas to interact with later
+var canvas = map.getCanvasContainer();
+
+// create a function to make a isochrone request
+function getFence(loc) {
+    // make directions request using cycling profile
+
+    var url = 'https://api.mapbox.com/isochrone/v1/mapbox/cycling/' + loc + '?contours_minutes=5,10,15&contours_colors=1084a8,1084a8,1084a8&polygons=true&access_token=' + mapboxgl.accessToken;
+
+    // make an XHR request https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest
+    var req = new XMLHttpRequest();
+    req.responseType = 'json';
+    req.open('GET', url, true);
+    req.onload  = function() {
+        var data = req.response.features;
+        console.log(data);
+        data.forEach(contour => {
+            console.log(contour);
+            // if the poly already exists on the map, we'll reset it using setData
+            let cp = contour.properties;
+            var layerID = 'fence' + cp.contour;
+            if (map.getSource('fence' + cp.contour)) {
+                map.getSource('fence'+ cp.contour).setData(contour);
+            }
+            // otherwise, we'll make a new request
+            else {
+                map.addLayer({
+                    "id": layerID,
+                    "type": "fill",
+                    "source": {
+                        "type": "geojson",
+                        "data": contour
+                    },
+                    "layout": {
+                    },
+                    "paint": {
+                        "fill-color": cp.fillColor,
+                        "fill-opacity": cp.fillOpacity
+                    }
+                }, 'water');
+            };
+        });
+    };
+    req.send();
+};
+
+map.on('load', function(){
+    // Add destination to the map
+    map.addLayer({
+        "id": "point",
+        "type": "circle",
+        "source": {
+        "type": "geojson",
+        "data": {
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [-122.66206798535438,45.52363989427619]
+                }
+            }]
+        }
+        },
+        "paint": {
+        "circle-radius": 10,
+        "circle-color": "#f30"
+        }
+    });
+
+    // allow the user to click the map to change the destination
+    map.on('click', function(e) {
+        var coordsObj = e.lngLat;
+        canvas.style.cursor = '';
+        var coords = Object.keys(coordsObj).map(function (key) { return coordsObj[key]; });
+        var end = {
+            "type": "FeatureCollection",
+            "features": [{
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": coords
+                }
+            }]
+        };
+        if (map.getLayer('point')) {
+            map.getSource('point').setData(end);
+        } else {
+            map.addLayer({
+            "id": "point",
+                "type": "circle",
+                "source": {
+                    "type": "geojson",
+                    "data": {
+                        "type": "FeatureCollection",
+                        "features": [{
+                            "type": "Feature",
+                            "properties": {},
+                            "geometry": {
+                                "type": "Point",
+                                "coordinates": coords
+                            }
+                        }]
+                    }
+                },
+                "paint": {
+                    "circle-radius": 10,
+                    "circle-color": "#f30"
+                }
+            });
+        };
+        getFence(coords);
+    });
+});
+</script>
+</body>
+</html>
