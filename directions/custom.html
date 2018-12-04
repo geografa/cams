@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Driving directions from static location</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.49.0/mapbox-gl.css' rel='stylesheet' />
+  <style>
+  body { 
+    margin:0;
+    padding:0;
+  }
+  #map { 
+    position:absolute;
+    top:0;
+    bottom:0;
+    width:100%;
+  }
+  #instructions {
+    position:absolute;
+    margin:20px;
+    width: 25%;
+    top:0;
+    bottom:20%;
+    padding: 20px;
+    background-color: rgba(255,255,255,0.9);
+    overflow-y: scroll;
+    font-family: sans-serif;
+    font-size: 0.8em;
+    line-height: 2em;
+  }
+  .duration {
+    font-size: 2em;
+  }
+  </style>
+</head>
+<body>
+  <div id='map'></div>
+  <div id='instructions'></div>
+  <script>
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ';
+  var map = new mapboxgl.Map({
+      container: 'map', // container id
+      style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
+      center: [-122.66232372860946,45.52375169876174], // starting position
+      zoom: 12, // starting zoom
+    });
+
+  var bounds = [[-123.06900353941785,45.39527344038203],[-122.30370789883006,45.61233388650223]];
+  map.setMaxBounds(bounds);
+
+  var canvas = map.getCanvasContainer();
+
+  var geojson = {
+    "type": "FeatureCollection",
+    "features": [{
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-122.66232372860946,45.52375169876174]
+      }
+    }]
+  };
+
+  map.on('load', function(){
+    var start = [-122.66232372860946,45.52375169876174];
+    getRoute(start);
+    
+    // Add destination to the map
+    map.addLayer({
+      "id": "point",
+      "type": "circle",
+      "source": {
+        "type": "geojson",
+        "data": {
+          "type": "FeatureCollection",
+          "features": [{
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "type": "Point",
+              "coordinates": start
+            }
+          }
+          ]
+        }
+      },
+      "paint": {
+        "circle-radius": 10,
+        "circle-color": "#3887be"
+      }
+    });
+
+    map.on('click', function(e) {
+        var coords = e.lngLat;
+        canvas.style.cursor = '';
+        var arr = Object.keys(coords).map(function (key) { return coords[key]; });
+        var geojson = {
+                  "type": "FeatureCollection",
+                  "features": [{
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                      "type": "Point",
+                      "coordinates": [coords.lng,coords.lat]
+                    }
+                  }
+                  ]
+                };
+        if (map.getLayer('end')) {
+            map.getSource('end').setData(geojson);
+        } else {
+            map.addLayer({
+            "id": "end",
+              "type": "circle",
+              "source": {
+                "type": "geojson",
+                "data": {
+                  "type": "FeatureCollection",
+                  "features": [{
+                    "type": "Feature",
+                    "properties": {},
+                    "geometry": {
+                      "type": "Point",
+                      "coordinates": [coords.lng,coords.lat]
+                    }
+                  }
+                  ]
+                }
+              },
+              "paint": {
+                "circle-radius": 10,
+                "circle-color": "#f30"
+              }
+            });
+        };
+        getRoute(arr);
+    });
+  });
+
+  function getRoute(end) {
+    // make directions request using driving profile
+    var start = [-122.66232372860946,45.52375169876174];
+    var url = 'https://api.mapbox.com/directions/v5/mapbox/driving/' + start[0] + ',' + start[1] + ';' + end[0] + ',' + end[1] + '?steps=true&geometries=geojson&access_token=' + mapboxgl.accessToken;
+    var req = new XMLHttpRequest();
+    req.responseType = 'json';
+    req.open('GET', url, true);
+    req.onload  = function() {
+      var data = req.response.routes[0];
+      var route = data.geometry.coordinates;
+      var geojson = {
+        "type": "Feature",
+        "properties": {},
+        "geometry": {
+          "type": "LineString",
+          "coordinates": route
+        }
+      };
+      if (map.getSource('route')) {
+        map.getSource('route').setData(geojson);
+      } else {
+        map.addLayer({
+            "id": "route",
+            "type": "line",
+            "source": {
+              "type": "geojson",
+              "data": {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                  "type": "LineString",
+                  "coordinates": geojson
+                }
+              }
+            },
+            "layout": {
+              "line-join": "round",
+              "line-cap": "round"
+            },
+            "paint": {
+              "line-color": "#3887be",
+              "line-width": 5,
+              "line-opacity": 0.75
+            }
+          });
+      };
+      var instructions = document.getElementById('instructions');
+      var steps = data.legs[0].steps;
+
+      var tripInstructions = [];
+      for (var i = 0; i < steps.length; i++) {
+        tripInstructions.push('<br><li>' + steps[i].maneuver.instruction) + '</li>';
+        instructions.innerHTML = '<br><span class="duration">Trip duration: ' + Math.floor(data.duration/60) + ' min 🚛 </span>' + tripInstructions;
+      };
+    };
+    req.send();
+  }
+</script>
+
+</body>
+</html>
