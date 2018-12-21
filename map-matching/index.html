@@ -34,7 +34,7 @@
 <div class='info-box'>
   <p>Draw your route using the draw tools (25 points max)</p>
   <div id='calculated-line'></div>
-  
+
   <h3>Profile:</h3>
   <div>
     <select id="profile">
@@ -51,7 +51,7 @@
 </div>
 
 <script>
-mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ';
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbTM3MmZjeGxxZiJ9.HG76QROZVWnTf9jQ9ZKWDw';
 var map = new mapboxgl.Map({
   container: 'map', // container id
   style: 'mapbox://styles/mapbox/streets-v9', //hosted style id
@@ -129,7 +129,7 @@ function updateRoute() {
   var meters = document.getElementById('radius').value; // get slider value
   var profile = document.getElementById('profile').value;
   updateSlider();
-  
+
   removeRoute(); // overwrite any existing layers
 
   var data = draw.getAll();
