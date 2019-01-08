@@ -70,7 +70,7 @@ function loadGeoJSON() {
     req.send();
 }
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ';
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
 
 var map = new mapboxgl.Map({
     container: 'map',
@@ -93,7 +93,7 @@ map.on('click', function (e) {
     var lng = e.lngLat.lng,
         lat = e.lngLat.lat;
 
-    var url = 'https://api.mapbox.com/directions-matrix/v1/mapbox/driving-traffic/' + lng +','+ lat + ';-122.58458586634072,45.58556897518142?sources=0&destinations=all&access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ';
+    var url = 'https://api.mapbox.com/directions-matrix/v1/mapbox/driving-traffic/' + lng +','+ lat + ';-122.58458586634072,45.58556897518142?sources=0&destinations=all&access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
 
     var req = new XMLHttpRequest();
     req.responseType = 'json';

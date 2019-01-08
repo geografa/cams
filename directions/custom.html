@@ -88,7 +88,7 @@
   <pre id='coordinates' class='coordinates'></pre>
 
   <script>
-  mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2lvZjU0NnRqMDB0cnVwbTM3MmZjeGxxZiJ9.HG76QROZVWnTf9jQ9ZKWDw';
+  mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
   var map = new mapboxgl.Map({
       container: 'map', // container id
       style: 'mapbox://styles/mapbox/streets-v9', //stylesheet location
@@ -234,12 +234,13 @@
     var destination = map.getSource('destination')._data.coordinates;
     var profile = document.getElementById("profile").value;
 
-    var url = 'https://api.mapbox.com/directions/v5/mapbox/' +  profile + '/' + origin[0] + ',' + origin[1] + ';' + destination[0] + ',' + destination[1] + '?steps=true&geometries=geojson&access_token=' + mapboxgl.accessToken;
+    var url = 'https://api.mapbox.com/directions/v5/mapbox/' +  profile + '/' + origin[0] + ',' + origin[1] + ';' + destination[0] + ',' + destination[1] + '?&alternatives=true&steps=true&geometries=geojson&access_token=' + mapboxgl.accessToken;
     var req = new XMLHttpRequest();
     req.responseType = 'json';
     req.open('GET', url, true);
     req.onload  = function() {
       var data = req.response.routes[0];
+      console.log(data);
       var route = data.geometry.coordinates;
       var line_geojson = {
         "type": "Feature",
