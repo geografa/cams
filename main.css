@@ -12,15 +12,20 @@ body { margin:0; padding:0; }
     padding: 20px;
     line-height: 2em
 }
-.title {
-    font-family: 'Pattaya', sans-serif;
-    font-size: 1.4em;
-    margin-bottom: 0;
+h1 {
+    font-family: 'Baloo Thambi', cursive;
+    font-size: 4em;
+    margin-bottom: 30px;
+}
+h2 {
+    font-family: 'Baloo Thambi', cursive;
+    font-size: 2em;
+    margin-bottom: 30px;
 }
 .txt {
     margin-top: 0;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 0.9em;
+    font-size: 1.2em;
     /* width: 50%; */
     margin: auto;
 }   
