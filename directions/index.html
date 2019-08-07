@@ -4,8 +4,8 @@
     <meta charset='utf-8' />
     <title>Display driving directions</title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.52.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.0.0/mapbox-gl.css' rel='stylesheet' />
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
@@ -27,15 +27,13 @@ var map = new mapboxgl.Map({
 });
 
 let directions = new MapboxDirections({
-    accessToken: mapboxgl.accessToken,
-    language: 'es'
+    accessToken: mapboxgl.accessToken
 });
 
-// map.addControl((directions), 'top-left');
+map.addControl((directions), 'top-left');
 
 directions.on('route', function () {
     let profile = directions.options.profile;
-    console.log(res);
     let dest = directions.getDestination();
     // console.log(dest.geometry.coordinates);
     let request = "https://api.mapbox.com/directions/v5/mapbox/" + profile + "/" + + ".json?access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2ptYjNtZWxnMDBrdDNwbnVicGJzOWg2NyJ9.9OulyCe3kEqMAXPbx1mKUA"

@@ -82,13 +82,6 @@
       <option value="cycling">cycling</option>
       <option value="walking">walking</option>
     </select>
-    
-    <select id="exclude" name="exclude">
-      <option value="none" selected>none</option>
-      <option value="motorway">motorway</option>
-      <option value="ferry">ferry</option>
-      <option value="toll">toll</option>
-    </select>
 
   </div>
   <div id='results'></div>
@@ -235,14 +228,13 @@
     });
   });
 
-  function getRoute(profile,origin,end,exclude) {
+  function getRoute(profile,origin,end) {
     // make directions request using driving profile
     var origin = map.getSource('origin')._data.coordinates;
     var destination = map.getSource('destination')._data.coordinates;
     var profile = document.getElementById("profile").value;
-    var exclude = document.getElementById("exclude").value;
-
-    var url = 'https://api.mapbox.com/directions/v5/mapbox/' +  profile + '/' + origin[0] + ',' + origin[1] + ';' + destination[0] + ',' + destination[1] + '?exclude=' + exclude + '&alternatives=true&steps=true&geometries=geojson&access_token=' + mapboxgl.accessToken;
+    
+    var url = 'https://api.mapbox.com/directions/v5/mapbox/' +  profile + '/' + origin[0] + ',' + origin[1] + ';' + destination[0] + ',' + destination[1] + '?alternatives=true&steps=true&geometries=geojson&access_token=' + mapboxgl.accessToken;
     var req = new XMLHttpRequest();
     req.responseType = 'json';
     req.open('GET', url, true);
