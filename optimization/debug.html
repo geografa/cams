@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset='utf-8' />
+  <title>Create a route using the Mapbox Map Matching API</title>
+  <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+  <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
+  <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet' />
+  <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+
+  <style>
+  body { margin:0; padding:0; }
+  #map { position:absolute; top:0; bottom:0; width:100%; }
+  </style>
+</head>
+<body>
+<style>
+  .info-box {
+    height: 260px;
+    width: 150px;
+    position: absolute;
+    top: 20px;
+    left: 10px;
+    background-color: rgba(255, 255, 255, .9);
+    padding: 15px;
+    text-align: left;
+    font-family: 'Arial';
+    margin: 0;
+    font-size: 13px;
+  }
+</style>
+
+<script src='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.js'></script>
+<link rel='stylesheet' href='https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-draw/v1.0.0/mapbox-gl-draw.css' type='text/css'/>
+<div id='map'></div>
+<div class='info-box'>
+  <p>Draw your route using the draw tools (25 points max)</p>
+  <div id='calculated-line'></div>
+
+  <h3>Profile:</h3>
+  <div>
+    <select id="profile">
+      <option value="driving">Driving</option>
+      <option value="cycling">Cycling</option>
+      <option value="walking">Walking</option>
+    </select>
+  </div>
+
+  <h3>Radius (1-50m):</h3>
+  <input id="radius" type="range" name="radius" min="1" max="50" placeholder="0" onchange="updateSlider()">
+  <span id="radiusValue"></span>
+
+</div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
+var map = new mapboxgl.Map({
+  container: 'map', // container id
+  style: 'mapbox://styles/mapbox/streets-v9', //hosted style id
+  center: [-122.67773866653444,45.52245801087795], // starting position
+  zoom: 15, // starting zoom
+});
+
+var draw = new MapboxDraw({
+  displayControlsDefault: false,
+  controls: {
+    line_string: true,
+    trash: true
+  },
+  styles: [
+    // ACTIVE (being drawn)
+    // line stroke
+    {
+      "id": "gl-draw-line",
+      "type": "line",
+      "filter": ["all", ["==", "$type", "LineString"], ["!=", "mode", "static"]],
+      "layout": {
+        "line-cap": "round",
+        "line-join": "round"
+      },
+      "paint": {
+        "line-color": "#3b9ddd",
+        "line-dasharray": [0.2, 2],
+        "line-width": 4,
+        "line-opacity": 0.7
+      }
+    },
+    // vertex point halos
+    {
+      "id": "gl-draw-polygon-and-line-vertex-halo-active",
+      "type": "circle",
+      "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+      "paint": {
+        "circle-radius": 10,
+        "circle-color": "#FFF"
+      }
+    },
+    // vertex points
+    {
+      "id": "gl-draw-polygon-and-line-vertex-active",
+      "type": "circle",
+      "filter": ["all", ["==", "meta", "vertex"], ["==", "$type", "Point"], ["!=", "mode", "static"]],
+      "paint": {
+        "circle-radius": 6,
+        "circle-color": "#3b9ddd",
+      }
+    },
+  ]
+});
+
+// add the draw tool to the map
+map.addControl(draw);
+
+// add create, update, or delete actions
+map.on('draw.create', updateRoute);
+map.on('draw.update', updateRoute);
+map.on('draw.delete', removeRoute);
+
+function updateSlider() {
+  var slider = document.getElementById('radius');
+  var output = document.getElementById('radiusValue');
+  output.innerHTML = slider.value + 'm';
+
+  slider.oninput = function() {
+    output.innerHTML = this.value;
+  }
+}
+
+// use the coordinates you just drew to make your matching request
+function updateRoute() {
+  var meters = document.getElementById('radius').value; // get slider value
+  var profile = document.getElementById('profile').value;
+  updateSlider();
+
+  removeRoute(); // overwrite any existing layers
+
+  var data = draw.getAll();
+  var answer = document.getElementById('calculated-line');
+  var lastFeature = data.features.length - 1;
+  var coords = data.features[lastFeature].geometry.coordinates;
+  var newCoords = coords.join(';')
+
+  var radius = [];
+  coords.forEach(element => {
+    radius.push(meters);
+  });
+
+  getMatch(newCoords,radius,profile);
+}
+
+// make a matching request
+function getMatch(e,radius,profile) {
+  var radiuses = radius.join(';')
+  var url = 'https://api.mapbox.com/matching/v5/mapbox/' + profile + '/' + e +'?geometries=geojson&radiuses=' + radiuses + '&steps=true&access_token=' + mapboxgl.accessToken;
+  var req = new XMLHttpRequest();
+  req.responseType = 'json';
+  req.open('POST', url, true);
+  req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+  req.onload  = function() {
+    var jsonResponse = req.response;
+    console.log(url);
+    var distance = jsonResponse.matchings[0].distance*0.001;
+    var duration = jsonResponse.matchings[0].duration/60;
+
+    var coords = jsonResponse.matchings[0].geometry;
+      addRoute(coords); // add the route to the map
+  };
+  req.send();
+}
+
+// adds the route as a layer on the map
+function addRoute (coords) {
+  // check if the route is already loaded
+  if (map.getSource('route')) {
+    map.removeLayer('route')
+    map.removeSource('route')
+  } else{
+    map.addLayer({
+      "id": "route",
+      "type": "line",
+      "source": {
+        "type": "geojson",
+        "data": {
+          "type": "Feature",
+          "properties": {},
+          "geometry": coords
+        }
+      },
+      "layout": {
+        "line-join": "round",
+        "line-cap": "round"
+      },
+      "paint": {
+        "line-color": "#3b9ddd",
+        "line-width": 8,
+        "line-opacity": 0.8
+      }
+    });
+  };
+}
+
+// remove the layer if it exists
+function removeRoute () {
+  if (map.getSource('route')) {
+    map.removeLayer('route');
+    map.removeSource('route');
+    document.getElementById('calculated-line').innerHTML = '';
+  } else  {
+    return;
+  }
+}
+</script>
+</body>
+</html>

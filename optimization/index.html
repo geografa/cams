@@ -260,7 +260,8 @@
           });
         }
 
-        return 'https://api.mapbox.com/optimized-trips/v1/mapbox/driving/' + coordinates.join(';') + ';' + school + '?source=first&destination=last&geometries=geojson&roundtrip=false&access_token=' + mapboxgl.accessToken;
+        return 'https://api.mapbox.com/optimized-trips/v1/mapbox/driving/103.86067107,1.30347345;103.96552348754101,1.3302246692743898;103.499208217514,1.357734090754178;103.85081530797899,1.4315750711136699;103.26186558980101,1.40026689906657;103.98083282,1.3380435596143798;103.96551048754101,1.76022466927?&geometries=geojson&distributions=1,2;3,5&roundtrip=true&source=first&destination=last&access_token=' + mapboxgl.accessToken;
+        // return 'https://api.mapbox.com/optimized-trips/v1/mapbox/driving/' + coordinates.join(';') + ';' + school + '?source=first&destination=last&geometries=geojson&roundtrip=false&access_token=' + mapboxgl.accessToken;
       }
 
       function objectToArray(obj) {
