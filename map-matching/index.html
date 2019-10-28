@@ -154,11 +154,11 @@ function getMatch(e,radius,profile) {
   var url = 'https://api.mapbox.com/matching/v5/mapbox/' + profile + '/' + e +'?geometries=geojson&radiuses=' + radiuses + '&steps=true&access_token=' + mapboxgl.accessToken;
   var req = new XMLHttpRequest();
   req.responseType = 'json';
-  req.open('POST', url, true);
+  req.open('GET', url, true);
   req.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
   req.onload  = function() {
     var jsonResponse = req.response;
-    console.log(url);
+    console.log(jsonResponse);
     var distance = jsonResponse.matchings[0].distance*0.001;
     var duration = jsonResponse.matchings[0].duration/60;
 
