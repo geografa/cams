@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Bar crawl App</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://npmcdn.com/@turf/turf/turf.min.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js'></script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.51.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+      body {
+        margin:0;
+        padding:0;
+      }
+
+      #map { 
+        position:absolute; 
+        top:0; 
+        bottom:0; 
+        right:0px; 
+        left:0px;  
+        background:black;
+      }
+      
+      .home{
+        width:50px;
+        height:50px;
+        /* border:1px solid #fff; */
+        border-radius:50%;
+        background:#fff;
+        pointer-events: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id='map' class='contain'></div>
+    <script>
+        var student = [-123.83660584688187,46.188818298408506];
+        var school = [-123.79744291305542,46.19693584900403];
+        var pointHopper = {};
+        
+        // Add your access token
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
+
+        // Initialize a map
+        var map = new mapboxgl.Map({
+          container: 'map', // container id
+          style: 'mapbox://styles/grafa/cjlecyrxd68v02qp9n6o6jndn', // stylesheet location
+          center: [-123.79744291305542,46.19693584900403], // starting position
+          zoom: 12 // starting zoom
+        });
+
+        var stop = turf.featureCollection([turf.point(school)]);
+        
+        // Create an empty GeoJSON feature collection for drop off locations
+        var dropoffs = turf.featureCollection([]);
+
+        // Create an empty GeoJSON feature collection, which will be used as the data source for the route before users add any new data
+        var nothing = turf.featureCollection([]);
+
+        map.on('load', function() {
+          var marker = document.createElement('div');
+          marker.classList = 'home';
+
+          marker.style.backgroundImage = 'url(https://imgur.com/fOWYPCZ.png)';
+
+          // Create a new marker
+          truckMarker = new mapboxgl.Marker(marker)
+            .setLngLat(student)
+            .addTo(map);
+
+          // Add the school
+          // Create a circle layer
+          map.addLayer({
+            id: 'stop',
+            type: 'circle',
+            source: {
+              data: stop,
+              type: 'geojson'
+            },
+            paint: {
+              'circle-radius': 20,
+              'circle-color': 'white',
+              'circle-stroke-color': '#3887be',
+              'circle-stroke-width': 3
+            }
+          });
+
+          // Create a symbol layer on top of circle layer
+          map.addLayer({
+            id: 'stop-symbol',
+            type: 'symbol',
+            source: {
+              data: stop,
+              type: 'geojson'
+            },
+            layout: {
+              'icon-image': 'bar-15',
+              'icon-size': 1
+            },
+            paint: {
+              'text-color': '#333'
+            }
+          });
+
+          // Add the pickups
+          map.addLayer({
+            id: 'dropoffs',
+            type: 'circle',
+            source: {
+              data: dropoffs,
+              type: 'geojson'
+            },
+            paint: {
+              'circle-radius': 15,
+              'circle-color': 'white',
+              'circle-stroke-color': '#3887be',
+              'circle-stroke-width': 3
+            }
+          });
+
+          // Create a symbol layer on top of circle layer
+          map.addLayer({
+            id: 'dropoffs-symbol',
+            type: 'symbol',
+            source: {
+              data: dropoffs,
+              type: 'geojson'
+            },
+            layout: {
+              'icon-allow-overlap': true,
+              'icon-image': 'beer-15',
+              'icon-size': 1
+            },
+            paint: {
+              'text-color': '#333'
+            }
+          });
+
+          map.addSource('route', {
+            type: 'geojson',
+            data: nothing
+          });
+
+          map.addLayer({
+            id:'routeline-active',
+            type:'line',
+            source: 'route',
+            layout:{
+              'line-join': 'round',
+              'line-cap': 'round'
+            },
+            paint:{
+              'line-color': '#3887be',
+              'line-width': {
+                base:1,
+                stops:[[12, 3], [22, 12]]
+              }
+            }
+          }, 'waterway-label');
+
+          map.addLayer({
+            id: 'routearrows',
+            type: 'symbol',
+            source: 'route',
+            layout: {
+              'symbol-placement': 'line',
+              'text-field': '▶',
+              'text-size': {
+                base: 1,
+                stops: [[12, 24], [22, 60]]
+              },
+              'symbol-spacing': {
+                base: 1,
+                stops: [[12, 30], [22, 160]]
+              },
+              'text-keep-upright': false
+            },
+            paint: {
+              'text-color': '#3887be',
+              'text-halo-color': 'hsl(55, 11%, 96%)',
+              'text-halo-width': 3
+            }
+          }, 'waterway-label');
+
+          // Listen for a click on the map
+          map.on('click', function(e) {
+            // When the map is clicked, add a new drop off point
+            // and update the `dropoffs-symbol` layer
+            newDropoff(map.unproject(e.point));
+            updateDropoffs(dropoffs);
+          });
+        });
+
+        function newDropoff(coords) {
+        // Store the clicked point as a new GeoJSON feature with
+        // two properties: `orderTime` and `key`
+        var pt = turf.point(
+          [coords.lng, coords.lat],
+          {
+            orderTime: Date.now(),
+            key: Math.random()
+          }
+        );
+        dropoffs.features.push(pt);
+        pointHopper[pt.properties.key] = pt;
+
+        // Make a request to the Optimization API
+        $.ajax({
+          method: 'GET',
+          url: assembleQueryURL(),
+        }).done(function(data) {
+          
+          // Create a GeoJSON feature collection
+          var routeGeoJSON = turf.featureCollection([turf.feature(data.trips[0].geometry)]);
+
+          // If there is no route provided, reset
+          if (!data.trips[0]) {
+            routeGeoJSON = nothing;
+          } else {
+            // Update the `route` source by getting the route source 
+            // and setting the data equal to routeGeoJSON
+            map.getSource('route')
+              .setData(routeGeoJSON);
+          }
+
+          // 
+          if (data.waypoints.length === 12) {
+            window.alert('Maximum number of points reached. Read more at mapbox.com/api-documentation/#optimization.');
+          }
+        });
+      }
+
+      function updateDropoffs(geojson) {
+        map.getSource('dropoffs')
+          .setData(geojson);
+        map.getSource('dropoffs-symbol')
+          .setData(geojson);
+      }
+
+      // Here you'll specify all the parameters necessary for requesting a response from the Optimization API
+      function assembleQueryURL() {
+
+        // Store the location of the truck in a variable called coordinates
+        var coordinates = [student];
+        var distributions = [];
+        // keepTrack = [student];
+
+        // Create an array of GeoJSON feature collections for each point
+        var restJobs = objectToArray(pointHopper);
+
+        // If there are actually orders from this restaurant
+        if (restJobs.length > 0) {
+
+          restJobs.forEach(function(d, i) {
+            // Add dropoff to list
+            coordinates.push(d.geometry.coordinates);
+          });
+        }
+        return 'https://api.mapbox.com/optimized-trips/v1/mapbox/walking/' + coordinates.join(';') + ';' + school + '?source=first&destination=last&geometries=geojson&roundtrip=false&access_token=' + mapboxgl.accessToken;
+      }
+
+      function objectToArray(obj) {
+        var keys = Object.keys(obj);
+        var routeGeoJSON = keys.map(function(key) {
+          return obj[key];
+        });
+        return routeGeoJSON;
+      }
+
+    </script>
+  </body>
+</html>
