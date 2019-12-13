@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Find times between two points</title>
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+<script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.js"></script>
+<link href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.6.0/mapbox-gl.css" rel="stylesheet" />
+<style>
+	body { margin: 0; padding: 0; }
+	#map { position: absolute; top: 0; bottom: 0; width: 100%; };
+</style>
+</head>
+<body>
+<style>
+    .coordinates {
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        position: absolute;
+        bottom: 40px;
+        left: 10px;
+        padding: 5px 10px;
+        margin: 0;
+        font-size: 11px;
+        line-height: 18px;
+        border-radius: 3px;
+        /* display: none; */
+    }
+</style>
+
+<div id="map"></div>
+<pre id="coordinates" class="coordinates">Drag either point 🔵🔴</pre>
+
+<script>
+	mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
+    var coordinates = document.getElementById('coordinates');
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v11',
+        center: [25.30733982095319,51.482309502286796],
+        zoom: 10
+    });
+
+    var canvas = map.getCanvasContainer();
+
+    var start = {
+        'type': 'FeatureCollection',
+        'features': [
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [25.2854,51.5310]
+                }
+            }
+        ]
+    };
+    var end = {
+        'type': 'FeatureCollection',
+        'features': [
+            {
+                'type': 'Feature',
+                'geometry': {
+                    'type': 'Point',
+                    'coordinates': [25.2599,51.4427]
+                }
+            },
+        ]
+    };
+
+    var coords = {
+                "type": "LineString",
+                "coordinates": [
+                [
+                25.2854,51.5310
+                ],
+                [
+                25.2599,51.4427
+                ]
+                ]
+            };
+
+    var route = {
+        "type": "FeatureCollection",
+        "features": [
+            {
+            "type": "Feature",
+            "properties": {},
+            "geometry": coords
+            },
+            
+        ]
+        };
+
+    function getMatrix(start,end) {
+      var url = 'https://api.mapbox.com/directions-matrix/v1/mapbox/driving/' + start + ';' + end + '?access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ';
+      var req = new XMLHttpRequest();
+      req.responseType = 'json';
+      req.open('GET', url, true);
+      req.onload  = function() {
+        var jsonResponse = req.response;
+        // document.getElementById("demo").innerHTML = jsonResponse.features;
+        // do something with jsonResponse
+
+        coordinates.style.display = 'block';
+        coordinates.innerHTML = Math.round(jsonResponse.durations[0][1]/60) + ' min to 🔴 from 🔵 <br>' + Math.round(jsonResponse.durations[1][0]/60) + ' min to 🔵 from 🔴';
+      };
+      req.send();
+  }
+
+    function getDirections(start,end) {
+      var url = 'https://api.mapbox.com/directions/v5/mapbox/driving/' + start + ';' + end + '?access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2oyamZ0cTVqMDIwYzMybWU4N25kenpjMCJ9.9clBFPj-fOP8ZToWfis7rQ&geometries=geojson&overview=full';
+      var req = new XMLHttpRequest();
+      req.responseType = 'json';
+      req.open('GET', url, true);
+      req.onload  = function() {
+        var jsonResponse = req.response;
+        // document.getElementById("demo").innerHTML = jsonResponse.features;
+        // do something with jsonResponse
+        console.log(jsonResponse.routes[0].duration/60 + ' minutes');
+        map.getSource('route').setData(jsonResponse.routes[0].geometry);
+      };
+      req.send();
+  }
+
+    function onMoveStart(e) {
+        var coords = e.lngLat;
+
+        // Set a UI indicator for dragging.
+        canvas.style.cursor = 'grabbing';
+
+        // Update the Point feature in `start` coordinates
+        // and call setData to the source layer `point` on it.
+        start.features[0].geometry.coordinates = [coords.lng, coords.lat];
+        map.getSource('start').setData(start);
+    }
+
+
+    function onMoveEnd(e) {
+        var coords = e.lngLat;
+
+        // Set a UI indicator for dragging.
+        canvas.style.cursor = 'grabbing';
+
+        // Update the Point feature in `end` coordinates
+        // and call setData to the source layer `point` on it.
+        end.features[0].geometry.coordinates = [coords.lng, coords.lat];
+        map.getSource('end').setData(end);
+
+    }
+
+    function onUp(e) {
+        canvas.style.cursor = '';
+
+        // Unbind mouse/touch events
+        map.off('mousemove', onMoveStart);
+        map.off('touchmove', onMoveStart);
+
+        // Unbind mouse/touch events
+        map.off('mousemove', onMoveEnd);
+        map.off('touchmove', onMoveEnd);
+
+        var source = start.features[0].geometry.coordinates;
+        var dest = end.features[0].geometry.coordinates;
+
+        getMatrix(source,dest);
+        getDirections(source,dest);
+    }
+
+    map.on('load', function() {
+        // Add a single point to the map
+        map.addSource('start', {
+            'type': 'geojson',
+            'data': start
+        });
+
+        map.addLayer({
+            'id': 'start',
+            'type': 'circle',
+            'source': 'start',
+            'paint': {
+                'circle-radius': 10,
+                'circle-color': '#3887be'
+            }
+        });
+
+        // Add a single point to the map
+        map.addSource('end', {
+            'type': 'geojson',
+            'data': end
+        });
+
+        map.addLayer({
+            'id': 'end',
+            'type': 'circle',
+            'source': 'end',
+            'paint': {
+                'circle-radius': 10,
+                'circle-color': '#f30'
+            }
+        });
+
+        map.addSource('route', {
+            'type': 'geojson',
+            'data': route
+        });
+
+        map.addLayer({
+            'id': 'route',
+            'type': 'line',
+            'source': 'route',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#bada55',
+                'line-width': 8,
+                'line-opacity':0.6
+            }
+        });
+
+        // When the cursor enters a feature in the start layer, prepare for dragging.
+        map.on('mouseenter', 'start', function() {
+            map.setPaintProperty('start', 'circle-color', '#3bb2d0');
+            canvas.style.cursor = 'move';
+        });
+
+        map.on('mouseleave', 'start', function() {
+            map.setPaintProperty('start', 'circle-color', '#3887be');
+            canvas.style.cursor = '';
+        });
+
+        map.on('mousedown', 'start', function(e) {
+            // Prevent the default map drag behavior.
+            e.preventDefault();
+
+            canvas.style.cursor = 'grab';
+
+            map.on('mousemove', onMoveStart);
+            map.once('mouseup', onUp);
+        });
+
+        map.on('touchstart', 'start', function(e) {
+            if (e.points.length !== 1) return;
+
+            // Prevent the default map drag behavior.
+            e.preventDefault();
+
+            map.on('touchmove', onMoveStart);
+            map.once('touchend', onUp);
+        });
+
+
+        // When the cursor enters a feature in the end layer, prepare for dragging.
+        map.on('mouseenter', 'end', function() {
+            map.setPaintProperty('end', 'circle-color', '#f30');
+            canvas.style.cursor = 'move';
+        });
+
+        map.on('mouseleave', 'end', function() {
+            map.setPaintProperty('end', 'circle-color', '#f20');
+            canvas.style.cursor = '';
+        });
+
+        map.on('mousedown', 'end', function(e) {
+            // Prevent the default map drag behavior.
+            e.preventDefault();
+
+            canvas.style.cursor = 'grab';
+
+            map.on('mousemove', onMoveEnd);
+            map.once('mouseup', onUp);
+        });
+
+        map.on('touchstart', 'end', function(e) {
+            if (e.points.length !== 1) return;
+
+            // Prevent the default map drag behavior.
+            e.preventDefault();
+
+            map.on('touchmove', onMoveEnd);
+            map.once('touchend', onUp);
+        });
+    });
+</script>
+
+</body>
+</html>
