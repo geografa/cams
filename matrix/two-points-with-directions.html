@@ -103,7 +103,7 @@
         // do something with jsonResponse
 
         coordinates.style.display = 'block';
-        coordinates.innerHTML = Math.round(jsonResponse.durations[0][1]/60) + ' min to 🔴 from 🔵 <br>' + Math.round(jsonResponse.durations[1][0]/60) + ' min to 🔵 from 🔴';
+        coordinates.innerHTML = jsonResponse.durations[0][1]/60 + ' min to 🔴 from 🔵 <br>' + jsonResponse.durations[1][0]/60 + ' min to 🔵 from 🔴';
       };
       req.send();
   }
