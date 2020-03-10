@@ -319,7 +319,7 @@
             coordinates.push(d.geometry.coordinates);
           });
         }
-        return 'https://api.mapbox.com/optimized-trips/v1/mapbox/walking/' + coordinates.join(';') + ';' + school + '?source=first&destination=last&geometries=geojson&roundtrip=false&access_token=' + mapboxgl.accessToken;
+        return 'https://api.mapbox.com/optimized-trips/v1/mapbox/driving/' + coordinates.join(';') + ';' + school + '?source=first&destination=last&geometries=geojson&roundtrip=false&access_token=' + mapboxgl.accessToken;
       }
 
       function objectToArray(obj) {
