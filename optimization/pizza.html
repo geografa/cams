@@ -26,6 +26,9 @@
             color: #fff;
             background: #ee8a65;
         }
+        .mapboxgl-ctrl-geocoder {
+            margin: auto 0;            
+        }
     </style>
 </head>
 <body>
@@ -48,7 +51,7 @@ var map = new mapboxgl.Map({
 map.addControl(
     new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
-        mapboxgl: mapboxgl
+        mapboxgl: mapboxgl,
     })
 );
 
