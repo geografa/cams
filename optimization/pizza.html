@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Generate Optimized Route w/ Random Points</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css' rel='stylesheet' />
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css" type="text/css"/>
+    <script src='https://unpkg.com/@turf/turf/turf.min.js'></script>
+<style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #pizza {
+            display: block;
+            position: relative;
+            margin: 0px auto;
+            width: 25%;
+            height: 40px;
+            padding: 10px;
+            border: none;
+            border-radius: 3px;
+            font-size: 12px;
+            text-align: center;
+            color: #fff;
+            background: #ee8a65;
+        }
+    </style>
+</head>
+<body>
+<!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+<div id='map'></div>
+<button id="pizza" onclick="routePizzas()">Pizza!</button>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
+var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd', // stylesheet location
+    center: [-122.64799230300383,45.51957143168099], // starting position [lng, lat]
+    zoom: 13, // starting zoom
+    minZoom: 9
+});
+
+map.addControl(
+    new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl
+    })
+);
+
+// start with getting a set of random points with turf
+findBounds = (cb) => {
+    coords = []; // empty it each time
+    var bounds = map.getBounds().toArray().flat();
+    // 12 is the max for the Optimization API 
+    // https://docs.mapbox.com/api/navigation/#optimization
+    var controls = turf.randomPoint(7, {bbox: bounds});
+    controls.features.forEach(function(control, index) {
+        coords.push(control.geometry.coordinates);
+    });
+    cb(controls);
+}
+
+var coords = [];
+function getDirections(coords) {
+    console.log(coords);
+    var waypoints = coords.join(';')
+    var url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/cycling/' + waypoints + '?geometries=geojson&steps=true&overview=full&source=first&destination=last&roundtrip=false&access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2ptYjNtZWxnMDBrdDNwbnVicGJzOWg2NyJ9.9OulyCe3kEqMAXPbx1mKUA';
+    var req = new XMLHttpRequest();
+    req.responseType = 'json';
+    req.open('GET', url, true);
+    req.onload  = function() {
+        var jsonResponse = req.response;
+        var geojson = turf.lineString(jsonResponse.trips[0].geometry.coordinates);
+        addRoute(geojson);
+    };
+    req.send();
+}
+
+routePizzas = () => {
+    findBounds(showStops);
+    getDirections(coords);
+}
+
+showStops = (controls) => {
+    if (map.getSource('controls')) {
+        map.getSource('controls').setData(controls)        
+    } else {
+        map.addSource('controls', {
+            'type': 'geojson',
+            'data': controls
+        });
+        map.addLayer({
+            'id': 'controls',
+            'type': 'symbol',
+            'source': 'controls',
+            'layout': {
+                'icon-image': 'pizza',
+                'icon-allow-overlap': true
+            }
+        });
+    }
+}
+
+function addRoute(geojson) {
+    if (map.getSource('route')) {
+        map.getSource('route').setData(geojson)
+    } else {
+        map.addSource('route',{
+            type: 'geojson',
+            data: geojson
+        });
+        map.addLayer({
+            id: 'route',
+            source: 'route',
+            type: 'line',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#f30',
+                'line-width': 4,
+                'line-opacity': 0.6
+            }
+        });
+        map.addLayer({
+			"id": "route-arrow",
+			"type": "symbol",
+			"source": "route",
+			"layout": {
+				"symbol-placement": "line",
+				"text-field": "▶",
+				"text-size": {
+					"base": 1,
+					"stops": [[12, 24], [22, 60]]
+				},
+				"symbol-spacing": {
+					"base": 1,
+					"stops": [[12, 30], [22, 160]]
+				},
+				"text-keep-upright": false
+			},
+			"paint": {
+				"text-color": "#ff6e00",
+				"text-halo-color": "hsl(55, 11%, 96%)",
+				"text-halo-width": 3
+			}
+		});
+    }
+}
+</script>
+</body>
+</html>
