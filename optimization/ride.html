@@ -34,7 +34,6 @@
                 top: 80px;
             }
         }
-
     </style>
 </head>
 <body>
@@ -60,6 +59,15 @@ map.addControl(
         mapboxgl: mapboxgl,
     })
 );
+// Add geolocate control to the map.
+map.addControl(
+    new mapboxgl.GeolocateControl({
+        positionOptions: {
+            enableHighAccuracy: true
+        },
+        trackUserLocation: true
+    })
+);
 
 // start with getting a set of random points with turf
 findBounds = (cb) => {
@@ -76,7 +84,6 @@ findBounds = (cb) => {
 
 var coords = [];
 function getDirections(coords) {
-    console.log(coords);
     var waypoints = coords.join(';')
     var url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/cycling/' + waypoints + '?geometries=geojson&steps=true&overview=full&source=first&destination=last&roundtrip=true&access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2ptYjNtZWxnMDBrdDNwbnVicGJzOWg2NyJ9.9OulyCe3kEqMAXPbx1mKUA';
     var req = new XMLHttpRequest();
