@@ -72,7 +72,7 @@ var coords = [];
 function getDirections(coords) {
     console.log(coords);
     var waypoints = coords.join(';')
-    var url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/cycling/' + waypoints + '?geometries=geojson&steps=true&overview=full&source=first&destination=last&roundtrip=false&access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2ptYjNtZWxnMDBrdDNwbnVicGJzOWg2NyJ9.9OulyCe3kEqMAXPbx1mKUA';
+    var url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/cycling/' + waypoints + '?geometries=geojson&steps=true&overview=full&source=first&destination=last&roundtrip=true&access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2ptYjNtZWxnMDBrdDNwbnVicGJzOWg2NyJ9.9OulyCe3kEqMAXPbx1mKUA';
     var req = new XMLHttpRequest();
     req.responseType = 'json';
     req.open('GET', url, true);
