@@ -12,7 +12,7 @@
 <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
-        #pizza {
+        #ride {
             display: block;
             position: relative;
             margin: 0px auto;
@@ -20,15 +20,21 @@
             height: 40px;
             padding: 10px;
             border: none;
-            border-radius: 3px;
             font-size: 12px;
             text-align: center;
             color: #fff;
             background: #ee8a65;
+            top: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgb(72, 72, 72);
         }
-        .mapboxgl-ctrl-geocoder {
-            margin: auto 0;            
+        @media (min-width: 320px) and (max-width: 480px) {
+            #ride {
+                width: 50%;
+                top: 80px;
+            }
         }
+
     </style>
 </head>
 <body>
@@ -37,7 +43,7 @@
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
 
 <div id='map'></div>
-<button id="pizza" onclick="routePizzas()">Let's ride! 🚴‍♂️💨</button>
+<button id="ride" onclick="routeBikes()">Let's ride! 🚴‍♂️💨</button>
 <script>
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
 var map = new mapboxgl.Map({
@@ -84,7 +90,7 @@ function getDirections(coords) {
     req.send();
 }
 
-routePizzas = () => {
+routeBikes = () => {
     findBounds(showStops);
     getDirections(coords);
 }
