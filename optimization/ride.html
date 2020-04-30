@@ -83,9 +83,9 @@ findBounds = (cb) => {
 }
 
 var coords = [];
-function getDirections(coords) {
+getDirections = (coords) => {
     var waypoints = coords.join(';')
-    var url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/cycling/' + waypoints + '?geometries=geojson&steps=true&overview=full&source=first&destination=last&roundtrip=true&access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2ptYjNtZWxnMDBrdDNwbnVicGJzOWg2NyJ9.9OulyCe3kEqMAXPbx1mKUA';
+    var url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/cycling/' + waypoints + '?geometries=geojson&steps=true&overview=full&source=first&destination=last&roundtrip=true&access_token=' + mapboxgl.accessToken;
     var req = new XMLHttpRequest();
     req.responseType = 'json';
     req.open('GET', url, true);
@@ -122,7 +122,7 @@ showStops = (controls) => {
     }
 }
 
-function addRoute(geojson) {
+addRoute = (geojson) => {
     if (map.getSource('route')) {
         map.getSource('route').setData(geojson)
     } else {
@@ -145,26 +145,26 @@ function addRoute(geojson) {
             }
         },'controls');
         map.addLayer({
-			"id": "route-arrow",
-			"type": "symbol",
-			"source": "route",
-			"layout": {
-				"symbol-placement": "line",
-				"text-field": "▶",
-				"text-size": {
-					"base": 1,
-					"stops": [[12, 24], [22, 60]]
+			'id': 'route-arrow',
+			'type': 'symbol',
+			'source': 'route',
+			'layout': {
+				'symbol-placement': 'line',
+				'text-field': '▶',
+				'text-size': {
+					'base': 1,
+					'stops': [[12, 24], [22, 60]]
 				},
-				"symbol-spacing": {
-					"base": 1,
-					"stops": [[12, 30], [22, 160]]
+				'symbol-spacing': {
+					'base': 1,
+					'stops': [[12, 30], [22, 160]]
 				},
-				"text-keep-upright": false
+				'text-keep-upright': false
 			},
-			"paint": {
-				"text-color": "#ff6e00",
-				"text-halo-color": "hsl(55, 11%, 96%)",
-				"text-halo-width": 3
+			'paint': {
+				'text-color': '#ff6e00',
+				'text-halo-color': 'hsl(55, 11%, 96%)',
+				'text-halo-width': 3
 			}
 		});
     }
