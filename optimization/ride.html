@@ -28,6 +28,10 @@
             border-radius: 5px;
             box-shadow: 0 1px 5px rgb(72, 72, 72);
         }
+        #routeLength {
+            /* font-size: 2em; */
+            color: rgb(30, 30, 55);
+        }
         @media (min-width: 320px) and (max-width: 480px) {
             #ride {
                 width: 50%;
@@ -42,7 +46,7 @@
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
 
 <div id='map'></div>
-<button id="ride" onclick="routeBikes()">Let's ride! 🚴‍♂️💨</button>
+<button id="ride" onclick="routeBikes()">Let's ride! 🚴‍♂️💨<span id="routeLength"></span></button>
 <script>
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
 var map = new mapboxgl.Map({
@@ -90,9 +94,10 @@ getDirections = (coords) => {
     req.responseType = 'json';
     req.open('GET', url, true);
     req.onload  = function() {
-        var jsonResponse = req.response;
-        var geojson = turf.lineString(jsonResponse.trips[0].geometry.coordinates);
-        addRoute(geojson);
+        var jsonResponse = req.response.trips[0];
+        var geojson = turf.lineString(jsonResponse.geometry.coordinates);
+        var routeDistance = jsonResponse.distance;
+        addRoute(geojson,routeDistance);
     };
     req.send();
 }
@@ -122,7 +127,7 @@ showStops = (controls) => {
     }
 }
 
-addRoute = (geojson) => {
+addRoute = (geojson,routeDistance) => {
     if (map.getSource('route')) {
         map.getSource('route').setData(geojson)
     } else {
@@ -168,6 +173,7 @@ addRoute = (geojson) => {
 			}
 		});
     }
+    document.getElementById('routeLength').innerHTML = parseFloat(routeDistance/1000).toFixed(2) + ' km';
 }
 </script>
 </body>
