@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Generate Optimized Route w/ Random Points</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v1.9.1/mapbox-gl.css' rel='stylesheet' />
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.5.1/mapbox-gl-geocoder.css" type="text/css"/>
+    <script src='https://unpkg.com/@turf/turf/turf.min.js'></script>
+<style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #ride {
+            display: block;
+            position: relative;
+            margin: 0px auto;
+            width: 25%;
+            height: 40px;
+            padding: 10px;
+            border: none;
+            font-size: 12px;
+            text-align: center;
+            color: #fff;
+            background: #ee8a65;
+            top: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgb(72, 72, 72);
+        }
+        #routeLength {
+            /* font-size: 2em; */
+            color: rgb(30, 30, 55);
+        }
+        @media (min-width: 320px) and (max-width: 480px) {
+            #ride {
+                width: 50%;
+                top: 80px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+<div id='map'></div>
+<button id="ride" onclick="routeBikes()">Let's run! 🏃🏻‍♂️💨<span id="routeLength"></span></button>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
+var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/grafa/ck8sa3wwg0hlg1in8uqau34dd', // stylesheet location
+    center: [-122.64799230300383,45.51957143168099], // starting position [lng, lat]
+    zoom: 13, // starting zoom
+    minZoom: 9
+});
+
+map.addControl(
+    new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl,
+    })
+);
+// Add geolocate control to the map.
+map.addControl(
+    new mapboxgl.GeolocateControl({
+        positionOptions: {
+            enableHighAccuracy: true
+        },
+        trackUserLocation: true
+    })
+);
+
+// start with getting a set of random points with turf
+findBounds = (cb) => {
+    coords = []; // empty it each time
+    var bounds = map.getBounds().toArray().flat();
+    // 12 is the max for the Optimization API 
+    // https://docs.mapbox.com/api/navigation/#optimization
+    var controls = turf.randomPoint(7, {bbox: bounds});
+    controls.features.forEach(function(control, index) {
+        coords.push(control.geometry.coordinates);
+    });
+    cb(controls);
+}
+
+var coords = [];
+getDirections = (coords) => {
+    var waypoints = coords.join(';')
+    var url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/walking/' + waypoints + '?geometries=geojson&steps=true&overview=full&source=first&destination=last&roundtrip=true&access_token=' + mapboxgl.accessToken;
+    var req = new XMLHttpRequest();
+    req.responseType = 'json';
+    req.open('GET', url, true);
+    req.onload  = function() {
+        var jsonResponse = req.response.trips[0];
+        var geojson = turf.lineString(jsonResponse.geometry.coordinates);
+        var routeDistance = jsonResponse.distance;
+        addRoute(geojson,routeDistance);
+    };
+    req.send();
+}
+
+routeBikes = () => {
+    findBounds(showStops);
+    getDirections(coords);
+}
+
+showStops = (controls) => {
+    if (map.getSource('controls')) {
+        map.getSource('controls').setData(controls)        
+    } else {
+        map.addSource('controls', {
+            'type': 'geojson',
+            'data': controls
+        });
+        map.addLayer({
+            'id': 'controls',
+            'type': 'symbol',
+            'source': 'controls',
+            'layout': {
+                'icon-image': 'dot-blue',
+                'icon-allow-overlap': true
+            }
+        });
+    }
+}
+
+addRoute = (geojson,routeDistance) => {
+    if (map.getSource('route')) {
+        map.getSource('route').setData(geojson)
+    } else {
+        map.addSource('route',{
+            type: 'geojson',
+            data: geojson
+        });
+        map.addLayer({
+            id: 'route',
+            source: 'route',
+            type: 'line',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#f30',
+                'line-width': 4,
+                'line-opacity': 0.6
+            }
+        },'controls');
+        map.addLayer({
+			'id': 'route-arrow',
+			'type': 'symbol',
+			'source': 'route',
+			'layout': {
+				'symbol-placement': 'line',
+				'text-field': '▶',
+				'text-size': {
+					'base': 1,
+					'stops': [[12, 24], [22, 60]]
+				},
+				'symbol-spacing': {
+					'base': 1,
+					'stops': [[12, 30], [22, 160]]
+				},
+				'text-keep-upright': false
+			},
+			'paint': {
+				'text-color': '#ff6e00',
+				'text-halo-color': 'hsl(55, 11%, 96%)',
+				'text-halo-width': 3
+			}
+		});
+    }
+    console.log(routeDistance);
+    document.getElementById('routeLength').innerHTML = parseFloat(routeDistance/1000).toFixed(2) + ' km';
+}
+</script>
+</body>
+</html>
