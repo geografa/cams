@@ -12,33 +12,124 @@
 <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
-        #ride {
-            display: block;
+        #info {
+            font-size: 1.2em;
+            font-family: Arial, Helvetica, sans-serif;
             position: relative;
             margin: 0px auto;
-            width: 25%;
-            height: 40px;
+            width: 30%;
+            height: 58px;
             padding: 10px;
             border: none;
+            text-align: center;
+            color: rgb(31, 28, 58);
+            background: #fff;
+            top: 10px;
+            border-radius: 5px;
+            box-shadow: 0 1px 5px rgb(72, 72, 72);            
+        }
+        #goButton {
+            position: relative;
+            width: 40px;
+            height: 25px;
+            padding: 6px;
+            border: none;
             font-size: 12px;
+            font-weight: bold;
             text-align: center;
             color: #fff;
-            background: #ee8a65;
-            top: 10px;
+            background: #4fb845;
+            top: -3px;
             border-radius: 5px;
             box-shadow: 0 1px 5px rgb(72, 72, 72);
         }
         #routeLength {
-            /* font-size: 2em; */
+            display: block;
+            font-size: 0.8em;
             color: rgb(30, 30, 55);
+            top: 40px;
+            left: 90px;
+        }
+        /* switch */
+        .switch {
+            background-color: #ddd;
+            border-radius: 18px;
+            cursor: pointer;
+            display: inline-block;
+            height: 20px;
+            padding: 3px;
+            position: relative;
+            vertical-align: top;
+            width: 56px;
+        }
+        .switch-input {
+            left: 0;
+            opacity: 0;
+            position: absolute;
+            top: 0;
+        }
+        .switch-label {
+            background: #10425c none repeat scroll 0 0;
+            border-radius: inherit;
+            display: block;
+            font-size: 10px;
+            height: inherit;
+            position: relative;
+            text-transform: uppercase;
+            transition: all 0.15s ease-out 0s;
+        }
+        .switch-label::before, .switch-label::after {
+            line-height: 1;
+            margin-top: -0.5em;
+            position: absolute;
+            top: 50%;
+            transition: inherit;
+        }
+        .switch-input:checked ~ .switch-label {
+            background: #47a8d8 none repeat scroll 0 0;
+        }
+        .switch-handle {
+            background-color: #fff;
+            border-radius: 10px;
+            height: 18px;
+            left: 4px;
+            position: absolute;
+            top: 4px;
+            transition: left 0.15s ease-out 0s;
+            width: 18px;
+        }
+        .switch-handle::before {
+            background-color: rgb(245, 245, 245);
+            border-radius: 6px;
+            content: "";
+            height: 12px;
+            left: 50%;
+            margin: -6px 0 0 -6px;
+            position: absolute;
+            top: 50%;
+            width: 12px;
+        }
+        .switch-input:checked ~ .switch-handle {
+            left: 40px;
+        }
+        .switch-green > .switch-input:checked ~ .switch-label {
+            background-color: #ddd;
         }
         @media (min-width: 320px) and (max-width: 480px) {
-            #ride {
+            #info {
                 width: 50%;
-                top: 80px;
+                top: 70px;
+            }
+            #routeLength {
+                font-size: 0.8em;
+                color: rgb(30, 30, 55);
+                width: 100%;
+                top: 40px;
+                left: 0;
+                text-align: center;
             }
         }
-    </style>
+</style>
 </head>
 <body>
 <!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
@@ -46,15 +137,26 @@
 <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
 
 <div id='map'></div>
-<button id="ride" onclick="routeBikes()">Let's ride! 🚴‍♂️💨<span id="routeLength"></span></button>
+<div id="info">
+    🚴‍♂️<label class="switch">
+        <input type="checkbox" class="switch-input">
+        <span class="switch-label" data-on="cycling" data-off="walking"></span>
+        <span class="switch-handle"></span>
+    </label>🏃‍♀️ 
+    <button id="goButton" onclick="routeBikes()">▶</button>
+    <span id="routeLength"></span>
+</div>
 <script>
+
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
 var map = new mapboxgl.Map({
     container: 'map', // container id
     style: 'mapbox://styles/grafa/cjlpdxg937l1b2rofobsv14ue', // stylesheet location
     center: [-122.64799230300383,45.51957143168099], // starting position [lng, lat]
     zoom: 13, // starting zoom
-    minZoom: 9
+    minZoom: 9,
+    hash: true
 });
 
 map.addControl(
@@ -88,8 +190,9 @@ findBounds = (cb) => {
 
 var coords = [];
 getDirections = (coords) => {
+    var profile = document.getElementsByClassName("switch-input")[0].checked ? 'walking' : 'cycling';
     var waypoints = coords.join(';')
-    var url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/cycling/' + waypoints + '?geometries=geojson&steps=true&overview=full&source=first&destination=last&roundtrip=true&access_token=' + mapboxgl.accessToken;
+    var url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/' + profile + '/' + waypoints + '?geometries=geojson&steps=true&overview=full&source=first&destination=last&roundtrip=true&access_token=' + mapboxgl.accessToken;
     var req = new XMLHttpRequest();
     req.responseType = 'json';
     req.open('GET', url, true);
@@ -97,7 +200,8 @@ getDirections = (coords) => {
         var jsonResponse = req.response.trips[0];
         var geojson = turf.lineString(jsonResponse.geometry.coordinates);
         var routeDistance = jsonResponse.distance;
-        addRoute(geojson,routeDistance);
+        var routeDuration = jsonResponse.duration;
+        addRoute(geojson,routeDistance,routeDuration);
     };
     req.send();
 }
@@ -127,7 +231,7 @@ showStops = (controls) => {
     }
 }
 
-addRoute = (geojson,routeDistance) => {
+addRoute = (geojson,routeDistance,routeDuration) => {
     if (map.getSource('route')) {
         map.getSource('route').setData(geojson)
     } else {
@@ -173,7 +277,7 @@ addRoute = (geojson,routeDistance) => {
 			}
 		});
     }
-    document.getElementById('routeLength').innerHTML = parseFloat(routeDistance/1000).toFixed(2) + ' km';
+    document.getElementById('routeLength').innerHTML = parseFloat(routeDistance/1000).toFixed(2) + ' km 🏆' + parseFloat(routeDuration/60).toFixed(2) + ' min';
 }
 </script>
 </body>
