@@ -108,6 +108,7 @@ map.on('click', function (e) {
          eta + ' min to PDX ✈</h2>';
     };
     req.send();
+    // https://apiportal.odot.state.or.us/api-details#api=tripcheck-api-v1-0&operation=Dms_GetStatus&definition=DmsStatusItem
 
     map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
