@@ -190,7 +190,6 @@ findBounds = (cb) => {
 var coords = [];
 getDirections = (coords) => {
     var roundtrip = document.getElementById("roundtrip").checked;
-    console.log(roundtrip);
     if (roundtrip) {
         roundtrip = "true";
     } else {
@@ -202,14 +201,15 @@ getDirections = (coords) => {
     // var waypoints = coords.join(';')
     var waypoints = document.getElementById("waypoints").value;
     // var waypoints = '-73.6192,45.7129;-73.4303,45.7766;-73.4495,45.7365;-73.4464,45.7764;-73.2865,45.8771;-73.4136,45.7859;-73.4747,45.7466;-73.4907,45.8466;-73.4865,45.8514;-73.369,45.8171;-73.4989,45.6561;-73.4888,45.8513;-73.5173,45.723;-73.3592,45.8274';
-    var url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/driving/' + waypoints + '?geometries=geojson&steps=true&overview=full&source=first&destination=any&roundtrip=' + roundtrip + '&access_token=' + mapboxgl.accessToken;
+    var url = 'https://api.mapbox.com/optimized-trips/v1/mapbox/driving/' + waypoints + '?geometries=geojson&steps=true&overview=full&source=first&destination=last&roundtrip=' + roundtrip + '&access_token=' + mapboxgl.accessToken;
+    console.log(url);
     var req = new XMLHttpRequest();
     req.responseType = 'json';
     req.open('GET', url, true);
     req.onload  = function() {
         var jsonResponse = req.response.trips[0];
         var control = req.response.waypoints;
-
+        console.log(jsonResponse);
         var geojson = turf.lineString(jsonResponse.geometry.coordinates);
         var routeDistance = jsonResponse.distance;
         var routeDuration = jsonResponse.duration;
@@ -219,7 +219,6 @@ getDirections = (coords) => {
             const element = control[index].location;
             const labels = control[index].waypoint_index;
             controls.features.push(turf.point(element, {name: labels}));
-            console.log(controls);
         }
         
         addRoute(geojson,routeDistance,routeDuration,controls);
