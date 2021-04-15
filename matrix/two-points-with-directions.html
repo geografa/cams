@@ -17,6 +17,19 @@
         background: rgba(0, 0, 0, 0.5);
         color: #fff;
         position: absolute;
+        bottom: 100px;
+        left: 10px;
+        padding: 5px 10px;
+        margin: 0;
+        font-size: 11px;
+        line-height: 18px;
+        border-radius: 3px;
+        /* display: none; */
+    }
+    .coordinatesDirections {
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        position: absolute;
         bottom: 40px;
         left: 10px;
         padding: 5px 10px;
@@ -30,6 +43,7 @@
 
 <div id="map"></div>
 <pre id="coordinates" class="coordinates">Drag either point 🔵🔴</pre>
+<pre id="coordinatesDirections" class="coordinatesDirections"></pre>
 
 <script>
 	mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
@@ -102,7 +116,7 @@
         // document.getElementById("demo").innerHTML = jsonResponse.features;
         // do something with jsonResponse
 
-        coordinates.style.display = 'block';
+        // coordinates.style.display = 'block';
         coordinates.innerHTML = jsonResponse.durations[0][1]/60 + ' min to 🔴 from 🔵 <br>' + jsonResponse.durations[1][0]/60 + ' min to 🔵 from 🔴';
       };
       req.send();
@@ -118,6 +132,9 @@
         // document.getElementById("demo").innerHTML = jsonResponse.features;
         // do something with jsonResponse
         console.log(jsonResponse.routes[0].duration/60 + ' minutes');
+        // coordinatesDirections.style.display = 'block';
+        coordinatesDirections.innerHTML = '<p>' + jsonResponse.routes[0].duration/60 + ' minutes (Directions API)</p>';
+
         map.getSource('route').setData(jsonResponse.routes[0].geometry);
       };
       req.send();
