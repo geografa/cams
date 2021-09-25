@@ -172,7 +172,8 @@ body { margin: 0; padding: 0; }
     }
     addRoute = (routeDuration,controls) => {
         map.fitBounds(turf.bbox(controls));
-        // document.getElementById('routeduration').innerHTML = parseFloat(routeDuration/60).toFixed(2); + ' min';
+        const min = routeDuration.reduce((a, b) => Math.min(a, b))
+        document.getElementById('routeduration').innerHTML = 'Fastest delivery in ' + parseFloat((min/60).toFixed(0)) + ' min';
     }
 </script>
 
