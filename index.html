@@ -5,37 +5,49 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>PDX Traffic</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://fonts.googleapis.com/css?family=Baloo+Thambi" rel="stylesheet">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
-    <script src="main.js"></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.7.0/mapbox-gl.css' rel='stylesheet' />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="main.css" />
+    <link rel="stylesheet" href="./styles/cams.css" />
+    
 </head>
 <body>
+<div id="map"></div>
 <div id="main">
-    <h1>pdxtraffic.com</h1>
+    <h2>Mapbox Nav API Demos</h2>
+    <p class="txt">Mapbox is a geodata platform of global sources powering Maps, Search, and Navigation APIs. 
+        This is an unofficial collection of navigation demos. Get your token 
+        <a href="https://studio.mapbox.com/">here</a>.</p>
     
     <ul class="txt">
-        <h2><a href="./cams/">ODOT Traffic cameras</a></h2>
-
         <h2>Directions</h2>
+        <p>Get fast and efficient ETAs with turn-by-turn directions.</p>
         <li><a href="./directions/">Directions (plugin)</a></li>
         <li><a href="./directions/custom.html">Directions (custom)</a></li>
         <li><a href="./directions/draw-directions.html">Draw Directions (custom)</a></li>
         <h2>Map Matching</h2>
+        <p>Snap messy GPS locations to the nearest routable network and get turn-by-turn directions.</p>
         <li><a href="./map-matching/">Match a drawn line to the map</a></li>
         <li><a href="./map-matching/match-coordinates.html">Map-match a list of coordinates</a></li>
         <h2>Isochrones</h2>
+        <p>Get travel times and distances from a location displayed as contours.</p>
         <li><a href="./isochrone/">How far can you travel in 15 min? 🚴‍♂️</a></li>
         <h2>Optimization</h2>
+        <p>Solve the traveling salesperson problem.</p>
         <li><a href="./optimization/">Traveling Sales Person Problem</a></li>
         <li><a href="./optimization/optimize-coordinates.html">Optimize a route with a set of coordinates</a></li>
         <li><a href="./optimization/ride.html">Generate Optimized Cycle Route with Random Points</a></li>
         <li><a href="https://geografa.github.io/mowsf/">Calculate optimal delivery route</a></li>
         <h2>Matrix</h2>
+        <p>Find travel times from origin(s) to destination(s)</p>
         <li><a href="./matrix/two-points.html">Calc travel times between two points (Matrix API)</a></li>
         <li><a href="./matrix/two-points-with-directions.html">Calc travel times between two points with a route (Matrix and Directions API)</a></li>
         <li><a href="./matrix/eta-to-marker.html">Get ETAs to central location (Matrix API)</a></li>
     </ul>       
 </div>
+<script src="bundle.js"></script>
+
 </body>
 </html>

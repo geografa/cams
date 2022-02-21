@@ -1,0 +1,27 @@
+{
+  "name": "cams",
+  "version": "1.0.0",
+  "description": "Oregon traffic cameras and other video feeds",
+  "main": "index.js",
+  "scripts": {
+    "build": "browserify index.js > bundle.js",
+    "start": "budo index.js:bundle.js --live --port 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geografa/cams.git"
+  },
+  "author": "Rafa Gutierrez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/geografa/cams/issues"
+  },
+  "homepage": "https://github.com/geografa/cams#readme",
+  "dependencies": {
+    "browserify": "^16.5.2",
+    "budo": "^11.6.4",
+    "mapbox": "^1.0.0-beta10",
+    "mapbox-gl": "^2.7.0",
+    "turf": "^3.0.14"
+  }
+}
