@@ -212,6 +212,7 @@ routeBikes = () => {
 }
 
 showStops = (controls) => {
+    console.log(controls);
     if (map.getSource('controls')) {
         map.getSource('controls').setData(controls)        
     } else {
@@ -232,6 +233,7 @@ showStops = (controls) => {
 }
 
 addRoute = (geojson,routeDistance,routeDuration) => {
+    
     if (map.getSource('route')) {
         map.getSource('route').setData(geojson)
     } else {

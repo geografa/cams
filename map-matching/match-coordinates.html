@@ -200,7 +200,7 @@ var coords = [];
 getDirections = (coords,profile) => {
     var profile = document.getElementById('profile').value;
     var waypoints = document.getElementById("waypoints").value;
-    var url = 'https://api.mapbox.com/matching/v5/mapbox/' + profile + '/' + waypoints + '?geometries=geojson&steps=true&overview=full&&access_token=' + mapboxgl.accessToken;
+    var url = 'https://api.mapbox.com/matching/v5/mapbox/' + profile + '/' + waypoints + '?geometries=geojson&steps=true&overview=full&access_token=' + mapboxgl.accessToken;
     var req = new XMLHttpRequest();
     req.responseType = 'json';
     req.open('GET', url, true);

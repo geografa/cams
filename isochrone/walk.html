@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Add a isochrone</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v2.11.0/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://unpkg.com/@turf/turf@6/turf.min.js'></script>
+
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #instructions {
+            height: 75px;
+            width: 150px;
+            position: absolute;
+            bottom: 40px;
+            left: 10px;
+            background-color: rgba(255, 255, 255, .9);
+            padding: 15px;
+            text-align: center;
+        }
+        .legend {
+            background-color: rgb(233, 233, 233);
+            border-radius: 3px;
+            bottom: 30px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.10);
+            font: 12px/20px 'Helvetica Neue', Arial, Helvetica, sans-serif;
+            padding: 10px;
+            position: absolute;
+            left: 10px;
+            z-index: 1;
+            text-align: left;
+        }
+        .legend h4 {
+            margin: 10px 0 0;
+        }
+            
+        .legend div span {
+            /* border-radius: 50%; */
+            display: inline-block;
+            height: 10px;
+            margin-right: 5px;
+            width: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+
+    <div class='legend'>
+        <h4>Offleash areas</h4>
+        <div><span style='background-color: #f30'></span>open</div>
+        <div><span style='background-color: #ffd966'></span>fenced</div>
+
+        <h4>Estimated walk times in minutes</h4>
+        <div><span style='background-color: #50A1B9'></span>5 min</div>
+        <div><span style='background-color: #70AFC1'></span>10 min</div>
+        <div><span style='background-color: #9FC4CE'></span>15 min</div>
+    </div>
+
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
+var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/grafa/ck4by36yt2qzd1cln7nxt58jm', //stylesheet location
+    center: [-122.60807874215936,45.5407220178584], // starting position
+    zoom: 11, // starting zoom
+});
+
+const dogparks = [[-122.656749,45.547078],[-122.626217,45.521072],[-122.644796,45.564511],[-122.693841,45.57265],[-122.518451,45.551649],[-122.600949,45.473625],[-122.761295,45.587447],[-122.550965,45.509012],[-122.758531,45.606702],[-122.691572,45.526705],[-122.707985,45.498857],[-122.616612,45.496287],[-122.586608,45.564767],[-122.529266,45.530994],[-122.623083,45.566574],[-122.611516,45.530481],[-122.719862,45.473034],[-122.628959,45.539721],[-122.704045,45.481433],[-122.570543,45.487344],[-122.53095,45.5488],[-122.486584,45.498321],[-122.595212,45.511677],[-122.606263,45.531802],[-122.682862,45.548516],[-122.69526,45.596461],[-122.585927,45.559463],[-122.663528,45.466609],[-122.633008,45.509729],[-122.681899,45.533062],[-122.703931,45.533254],[-122.670039,45.474622],[-122.628171,45.552913],[-122.612687,45.483649]];
+const offleash = [[-122.600949,45.473625],[-122.758531,45.606702],[-122.719862,45.473034],[-122.53095,45.5488],[-122.486584,45.498321],[-122.606263,45.531802],[-122.585927,45.559463],[-122.681899,45.533062],[-122.703931,45.533254],[-122.670039,45.474622]];
+// create a new feature collection with the coordinates from the dogparks array
+let dpFeatureCollection = turf.featureCollection(dogparks.map(function (coords) {
+  return turf.point(coords);
+}));
+let dpOlFeatureCollection = turf.featureCollection(offleash.map(function (coords) {
+  return turf.point(coords);
+}));
+
+// initialize the map canvas to interact with later
+var canvas = map.getCanvasContainer();
+
+map.on('load', function(){
+    // Add parks to the map
+    map.addLayer({
+        "id": "point-outline",
+        "type": "circle",
+        "source": {
+        "type": "geojson",
+        "data": dpOlFeatureCollection
+        },
+        "paint": {
+            "circle-radius": 8,
+            "circle-color": "#ffd966",
+            "circle-opacity": 0.8
+        }
+    });
+    map.addLayer({
+        "id": "point",
+        "type": "circle",
+        "source": {
+        "type": "geojson",
+        "data": dpFeatureCollection
+        },
+        "paint": {
+            "circle-radius": 5,
+            "circle-color": "#f30",
+            "circle-opacity": 0.8
+        }
+    });
+
+    // using the Mapbox Isochrone API, make a request for each feature in the feature collection and add the results to the map
+    dpFeatureCollection.features.forEach(function (point) {
+        var coords = point.geometry.coordinates;
+        var isochrone = 'https://api.mapbox.com/isochrone/v1/mapbox/walking/' + coords[0] + ',' + coords[1] + '?contours_minutes=5,10,15&contours_colors=50A1B9,70AFC1,9FC4CE&polygons=true&access_token=' + mapboxgl.accessToken;
+        map.addSource('isochrone' + coords[0], {
+            type: 'geojson',
+            data: isochrone
+        });
+        map.addLayer({
+            'id': 'isochrone' + coords[0],
+            'type': 'fill',
+            'source': 'isochrone' + coords[0],
+            'layout': {},
+            'paint': {
+                'fill-color': '#50A1B9', // blue color fill
+                'fill-opacity': 0.2
+            }
+        },'point-outline');
+    });
+    
+
+});
+</script>
+</body>
+</html>
