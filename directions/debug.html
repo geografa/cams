@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Debug Directions API Request</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v2.14.1/mapbox-gl.css' rel='stylesheet' />
+    <!-- Load the `mapbox-gl-geocoder` plugin. -->
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.min.js"></script>
+    <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v5.0.0/mapbox-gl-geocoder.css" type="text/css">
+    
+    
+    <script src='https://unpkg.com/@turf/turf/turf.min.js'></script>
+<style>
+    body { margin:0; padding:0; }
+    #map { position:absolute; top:0; bottom:0; width:100%; }
+    #info {
+      color: #ddd;
+      font-size: 1em;
+        font-family: Arial, Helvetica, sans-serif;
+        position: relative;
+        margin: 0px 10px;
+        width: 24%;
+        height: 600px;
+        padding: 20px;
+        border: none;
+        text-align: left;
+        background: #3e3d3d;
+        opacity: 0.85;
+        top: 10px;
+        border-radius: 5px;
+        box-shadow: 0 1px 5px rgb(72, 72, 72);            
+    }
+    #info input {
+        height: 1.5em;
+        width: 200px;
+    }
+    #info textarea {
+        height: 60px;
+        width: 200px;
+    }
+    #info a {
+        color: #02eeff;
+        text-decoration: underline;
+    }
+    
+    #params {
+        list-style: none;
+        line-height: 1.8em;
+    }
+    #waypoints { 
+        width: 200px;
+        height: 40px;
+    }
+
+    #goButton {
+        margin-top: 20px;
+        padding: 6px;
+        border: none;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+        color: #fff;
+        background: #4fb845;
+        top: -3px;
+        border-radius: 5px;
+        box-shadow: 0 1px 5px rgb(72, 72, 72);
+    }
+    #routeLength {
+        display: block;
+    }
+    /* switch */
+    .switch {
+        background-color: #ddd;
+        border-radius: 18px;
+        cursor: pointer;
+        display: inline-block;
+        height: 20px;
+        padding: 3px;
+        position: relative;
+        vertical-align: top;
+        width: 56px;
+    }
+    .switch-input {
+        left: 0;
+        opacity: 0;
+        position: absolute;
+        top: 0;
+    }
+    .switch-label {
+        background: #10425c none repeat scroll 0 0;
+        border-radius: inherit;
+        display: block;
+        font-size: 10px;
+        height: inherit;
+        position: relative;
+        text-transform: uppercase;
+        transition: all 0.15s ease-out 0s;
+    }
+    .switch-label::before, .switch-label::after {
+        line-height: 1;
+        margin-top: -0.5em;
+        position: absolute;
+        top: 50%;
+        transition: inherit;
+    }
+    .switch-input:checked ~ .switch-label {
+        background: #47a8d8 none repeat scroll 0 0;
+    }
+    .switch-handle {
+        background-color: #fff;
+        border-radius: 10px;
+        height: 18px;
+        left: 4px;
+        position: absolute;
+        top: 4px;
+        transition: left 0.15s ease-out 0s;
+        width: 18px;
+    }
+    .switch-handle::before {
+        background-color: rgb(245, 245, 245);
+        border-radius: 6px;
+        content: "";
+        height: 12px;
+        left: 50%;
+        margin: -6px 0 0 -6px;
+        position: absolute;
+        top: 50%;
+        width: 12px;
+    }
+    .switch-input:checked ~ .switch-handle {
+        left: 40px;
+    }
+    .switch-green > .switch-input:checked ~ .switch-label {
+        background-color: #ddd;
+    }
+    @media (min-width: 320px) and (max-width: 480px) {
+        #info {
+            width: 50%;
+            top: 70px;
+        }
+        #routeLength {
+            width: 100%;
+            top: 40px;
+            left: 0;
+            text-align: center;
+        }
+    }
+</style>
+</head>
+<body>
+<!-- Promise polyfill script required to use Mapbox GL Geocoder in IE 11 -->
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+
+<div id='map'></div>
+<div id="info">
+  <ul id="params">
+      <!-- <li>Profile:
+        <select id="profile">
+          <option value="driving-traffic">Driving (Traffic)</option>
+          <option value="driving">Driving</option>
+          <option value="cycling">Cycling</option>
+          <option value="walking">Walking</option>
+        </select>
+      </li> -->
+      <li>Coordinates<br /> <textarea name="waypoints" id="waypoints" placeholder="example: -122.674,45.525;-122.7080,45.4989"></textarea><br></li>      <!-- -76.702463,39.309404;-76.749025,39.334992 -->
+      <li>Exclude:<br /><input type="text" id="exclude" placeholder="motorway,toll" /></li>
+      <li>Max Weight:<br /> <input type="number" id="maxweight" placeholder="0-100 metric tons; default 2.5" /></li>
+      <li>Max Height:<br /> <input type="number" id="maxheight" placeholder="0-10 meters; default 1.6" /></li>
+      <li>Max Width:<br /> <input type="number" id="maxwidth" placeholder="0-10 meters; default 1.9" /></li>
+      <li>Depart at:<br /> <input type="text" id="depart_at" placeholder="2023-05-12T16:08" /></li>
+      <li id="routeLength"></li>
+      <li id="osm"></li>
+      <div><button id="goButton" onclick="makeRoute()">make route</button></div>
+
+  </ul>
+<script>
+
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
+var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/grafa/cl5r4bxab000014npdfg488i7', // agg direct style
+    center: [-122.6693,45.551355], // starting position [lng, lat]
+    zoom: 11, // starting zoom
+    hash: true
+});
+
+map.addControl(
+    new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl,
+    })
+);
+// Add geolocate control to the map.
+map.addControl(
+    new mapboxgl.GeolocateControl({
+        positionOptions: {
+            enableHighAccuracy: true
+        },
+        trackUserLocation: true
+    })
+);
+
+findBounds = (cb) => {
+    var coords = []; // empty it each time
+    var bounds = map.getBounds().toArray().flat();
+    var controls = document.getElementById("waypoints").value;
+    controls.features.forEach(function(control, index) {
+        coords.push(control.geometry.coordinates);
+    });
+    cb(controls);
+}
+var coords = [];
+
+getDirections = (coords) => {
+    // var profile = document.getElementById('profile').value;
+    var waypoints = document.getElementById("waypoints").value;
+    var exclude = document.getElementById("exclude").value;
+    var maxweight = document.getElementById("maxweight").value;
+    var maxheight = document.getElementById("maxheight").value;
+    var maxwidth = document.getElementById("maxwidth").value;
+    var depart_at = document.getElementById("depart_at").value;
+    // create a url variable to store the Directions API request with the user input from above 
+    var url = 'https://api.mapbox.com/directions/v5/mapbox/driving-traffic' +
+    '/' + waypoints +
+    '?geometries=geojson&steps=true&overview=full&access_token=' + mapboxgl.accessToken;
+    // if the user has input a value for the exclude parameter, add it to the url variable
+    if (exclude) {
+        url += '&exclude=' + exclude;
+    }
+    // if the user has input a value for the maxweight parameter, add it to the url variable
+    if (maxweight) {
+        url += '&max_weight=' + maxweight;
+    }
+    // if the user has input a value for the maxheight parameter, add it to the url variable
+    if (maxheight) {
+        url += '&max_height=' + maxheight;
+    }
+    // if the user has input a value for the maxwidth parameter, add it to the url variable
+    if (maxwidth) {
+        url += '&max_width=' + maxwidth;
+    }
+    // if the user has input a value for the depart_at parameter, add it to the url variable
+    if (depart_at) {
+        url += '&depart_at=' + depart_at;
+    }
+    
+    var req = new XMLHttpRequest();
+    req.responseType = 'json';
+    req.open('GET', url, true);
+    req.onload  = function() {
+        console.log(req.response);
+        var jsonResponse = req.response.routes[0];
+        console.log(jsonResponse);
+        var geojson = jsonResponse.geometry;
+        var routeDistance = jsonResponse.distance;
+        var routeDuration = jsonResponse.duration;
+        addRoute(geojson,routeDistance,routeDuration);
+    };
+    req.send();
+}
+
+makeRoute = () => {
+    getDirections(coords);
+}
+
+addRoute = (geojson,routeDistance,routeDuration) => {
+    map.fitBounds(turf.bbox(geojson));
+    if (map.getSource('route')) {
+        map.getSource('route').setData(geojson)
+    } else {
+        map.addSource('route',{
+            type: 'geojson',
+            data: geojson
+        });
+        map.addLayer({
+            id: 'route',
+            source: 'route',
+            type: 'line',
+            'layout': {
+                'line-join': 'round',
+                'line-cap': 'round'
+            },
+            'paint': {
+                'line-color': '#f30',
+                'line-width': 4,
+                'line-opacity': 0.6
+            }
+        });
+        map.addLayer({
+			'id': 'route-arrow',
+			'type': 'symbol',
+			'source': 'route',
+			'layout': {
+				'symbol-placement': 'line',
+				'text-field': '▶',
+				'text-size': {
+					'base': 1,
+					'stops': [[12, 24], [22, 60]]
+				},
+				'symbol-spacing': {
+					'base': 1,
+					'stops': [[12, 30], [22, 160]]
+				},
+				'text-keep-upright': false
+			},
+			'paint': {
+				'text-color': '#ff6e00',
+				'text-halo-color': 'hsl(55, 11%, 96%)',
+				'text-halo-width': 3
+			}
+		});
+    }
+    document.getElementById('routeLength').innerHTML = 'Distance: ' + parseFloat(routeDistance/1000).toFixed(2) + ' km <br>Duration: ' + parseFloat(routeDuration/60).toFixed(2) + ' min';
+}
+
+map.on('moveend', () => {
+    if (window.location.hash) {
+        var osm = decodeURIComponent(window.location.hash.split('#')[1]);
+        document.getElementById("osm").innerHTML = "<a href='https://www.openstreetmap.org/#map=" + osm + "' target=_blank>OSM 🔗</a>";
+    }
+});
+
+</script>
+</body>
+</html>
