@@ -113,8 +113,8 @@
   </ul>
 <script>
 
-mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w';
-var map = new mapboxgl.Map({
+mapboxgl.accessToken = 'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2xmdTIwdGlzMDZmejNubWd1M3FwOGJ4MSJ9.EUpdKVgwqaxUyeLtriqFEw';
+let map = new mapboxgl.Map({
     container: 'map', // container id
     style: 'mapbox://styles/grafa/cl5r4bxab000014npdfg488i7', // agg direct style
     center: [-122.6693,45.551355], // starting position [lng, lat]
@@ -139,26 +139,26 @@ map.addControl(
 );
 
 findBounds = (cb) => {
-    var coords = []; // empty it each time
-    var bounds = map.getBounds().toArray().flat();
-    var controls = document.getElementById("waypoints").value;
+    let coords = []; // empty it each time
+    let bounds = map.getBounds().toArray().flat();
+    let controls = document.getElementById("waypoints").value;
     controls.features.forEach(function(control, index) {
         coords.push(control.geometry.coordinates);
     });
     cb(controls);
 }
-var coords = [];
+let coords = [];
 
 getDirections = (coords) => {
-    // var profile = document.getElementById('profile').value;
-    var waypoints = document.getElementById("waypoints").value;
-    var exclude = document.getElementById("exclude").value;
-    var maxweight = document.getElementById("maxweight").value;
-    var maxheight = document.getElementById("maxheight").value;
-    var maxwidth = document.getElementById("maxwidth").value;
-    var depart_at = document.getElementById("depart_at").value;
+    // let profile = document.getElementById('profile').value;
+    let waypoints = document.getElementById("waypoints").value;
+    let exclude = document.getElementById("exclude").value;
+    let maxweight = document.getElementById("maxweight").value;
+    let maxheight = document.getElementById("maxheight").value;
+    let maxwidth = document.getElementById("maxwidth").value;
+    let depart_at = document.getElementById("depart_at").value;
     // create a url variable to store the Directions API request with the user input from above 
-    var url = 'https://api.mapbox.com/directions/v5/mapbox/driving-traffic' +
+    let url = 'https://api.mapbox.com/directions/v5/mapbox/driving-traffic' +
     '/' + waypoints +
     '?geometries=geojson&steps=true&overview=full&access_token=' + mapboxgl.accessToken;
     // if the user has input a value for the exclude parameter, add it to the url variable
@@ -182,16 +182,16 @@ getDirections = (coords) => {
         url += '&depart_at=' + depart_at;
     }
     
-    var req = new XMLHttpRequest();
+    let req = new XMLHttpRequest();
     req.responseType = 'json';
     req.open('GET', url, true);
     req.onload  = function() {
         console.log(req.response);
-        var jsonResponse = req.response.routes[0];
+        let jsonResponse = req.response.routes[0];
         console.log(jsonResponse);
-        var geojson = jsonResponse.geometry;
-        var routeDistance = jsonResponse.distance;
-        var routeDuration = jsonResponse.duration;
+        let geojson = jsonResponse.geometry;
+        let routeDistance = jsonResponse.distance;
+        let routeDuration = jsonResponse.duration;
         addRoute(geojson,routeDistance,routeDuration);
     };
     req.send();
@@ -252,7 +252,7 @@ addRoute = (geojson,routeDistance,routeDuration) => {
 }
 map.on('moveend', () => {
     if (window.location.hash) {
-        var osm = decodeURIComponent(window.location.hash.split('#')[1]);
+        let osm = decodeURIComponent(window.location.hash.split('#')[1]);
         document.getElementById("osm").innerHTML = "<a href='https://www.openstreetmap.org/#map=" + osm + "' target=_blank>OSM 🔗</a>";
     }
 });

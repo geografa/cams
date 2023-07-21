@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>A simple map</title>
+    <meta
+      name="viewport"
+      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+    />
+    <link
+      href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+    <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+    <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.0/mapbox-gl-geocoder.css"
+      type="text/css"
+    />
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      mapboxgl.accessToken =
+        'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2ptYjNtZWxnMDBrdDNwbnVicGJzOWg2NyJ9.9OulyCe3kEqMAXPbx1mKUA'; // Change this Mapbox token; it will expire
+      var map = new mapboxgl.Map({
+        container: 'map', // container id
+        style: 'mapbox://styles/mapbox/dark-v11', // YOUR TURN: choose a style: https://docs.mapbox.com/api/maps/#styles
+        center: [-76.93170737386515, 38.957941315260086],
+        zoom: 12,
+        // restrict minimum zoom level to 12
+        minZoom: 12,
+      });
+
+      // add a geocoder to the map
+      var geocoder = new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl,
+      });
+      map.addControl(geocoder);
+
+      function loadGeoJSON() {
+        let bounds = map.getBounds();
+        let ne = bounds.getNorthEast();
+        let sw = bounds.getSouthWest();
+
+        var url =
+          'https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%3B%0A%28%0A%20%20way%5B%22maxweight%22%5D%28' +
+          sw.lat +
+          '%2C' +
+          sw.lng +
+          '%2C' +
+          ne.lat +
+          '%2C' +
+          ne.lng +
+          '%29%3B%0A%29%3B%0Aout%20body%3B%0A%3E%3B%0Aout%20skel%20qt%3B';
+        var req = new XMLHttpRequest();
+        req.responseType = 'json';
+        req.open('GET', url, true);
+        req.onload = function () {
+          var jsonResponse = req.response;
+          // document.getElementById("demo").innerHTML = jsonResponse.features;
+          // do something with jsonResponse
+          console.log(jsonResponse);
+          // for each element in jsonResponse.features, create a point and add it to the map
+          var points = [];
+          for (var i = 0; i < jsonResponse.elements.length; i++) {
+            var element = jsonResponse.elements[i];
+            // console.log(element.id);
+
+            // create a point for each element if it is a node. Use the id to match the node to the tags and get the maxweight value from the tags object and add it to the point properties
+            if (element.type == 'node') {
+              var point = {
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [element.lon, element.lat],
+                },
+              };
+              points.push(point);
+            }
+            if (element.type == 'way') {
+              console.log(element.tags.maxweight);
+              var props = {
+                properties: {
+                  title: element.nodes,
+                },
+              };
+              // points.push(point.props);
+              console.log(props);
+            }
+          }
+
+          // if the source points already exists, update it by setting its data
+          if (map.getSource('points')) {
+            map.getSource('points').setData({
+              type: 'FeatureCollection',
+              features: points,
+            });
+          } else {
+            // otherwise, create a new source
+            map.addSource('points', {
+              type: 'geojson',
+              data: {
+                type: 'FeatureCollection',
+                features: points,
+              },
+            });
+            map.addLayer({
+              id: 'points',
+              type: 'circle',
+              source: 'points',
+              paint: {
+                'circle-radius': 6,
+                'circle-color': '#bad4ff',
+                'circle-stroke-width': 2,
+                'circle-stroke-color': '#fff',
+              },
+            });
+          }
+          // create a popup for each marker and add it to the map
+          points.forEach(function (point) {
+            var popup = new mapboxgl.Popup({ offset: 25 }).setText(
+              'Maxspeed: '
+            );
+            new mapboxgl.Marker()
+              .setLngLat(point.geometry.coordinates)
+              .setPopup(popup)
+              .addTo(map);
+          });
+        };
+        req.send();
+      }
+
+      geocoder.on('result', function (ev) {
+        map.panTo(ev.result.center);
+        map.once('moveend', function () {
+          loadGeoJSON();
+        });
+      });
+    </script>
+  </body>
+</html>
