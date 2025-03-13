@@ -36,14 +36,14 @@
     <div id="map"></div>
     <script>
       mapboxgl.accessToken =
-        'pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2ptYjNtZWxnMDBrdDNwbnVicGJzOWg2NyJ9.9OulyCe3kEqMAXPbx1mKUA'; // Change this Mapbox token; it will expire
+        "pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2ptYjNtZWxnMDBrdDNwbnVicGJzOWg2NyJ9.9OulyCe3kEqMAXPbx1mKUA"; // Change this Mapbox token; it will expire
       var map = new mapboxgl.Map({
-        container: 'map', // container id
-        style: 'mapbox://styles/mapbox/dark-v11', // YOUR TURN: choose a style: https://docs.mapbox.com/api/maps/#styles
-        center: [-76.93170737386515, 38.957941315260086],
+        container: "map", // container id
+        style: "mapbox://styles/mapbox/dark-v11", // YOUR TURN: choose a style: https://docs.mapbox.com/api/maps/#styles
+        center: [-122.67836999999997, 45.51519800000003],
         zoom: 12,
-        // restrict minimum zoom level to 12
-        minZoom: 12,
+        bearing: 0,
+        pitch: 0,
       });
 
       // add a geocoder to the map
@@ -53,104 +53,40 @@
       });
       map.addControl(geocoder);
 
-      function loadGeoJSON() {
-        let bounds = map.getBounds();
-        let ne = bounds.getNorthEast();
-        let sw = bounds.getSouthWest();
-
+      // // when the geocoder returns a result, use the overpass turbo API https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A25%5D%3B%0A%2F%2F%20gather%20results%0Anwr%5B%22amenity%22%3D%22stripclub%22%5D%2845.43484008247013%2C-122.8374481201172%2C45.612116176517304%2C-122.45464324951172%29%3B%0A%2F%2F%20print%20results%0Aout%20geom%3B to return the data where type=way and display it on the map
+      geocoder.on("result", function (ev) {
+        var bbox = ev.result;
+        console.log(bbox);
         var url =
-          'https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%3B%0A%28%0A%20%20way%5B%22maxweight%22%5D%28' +
-          sw.lat +
-          '%2C' +
-          sw.lng +
-          '%2C' +
-          ne.lat +
-          '%2C' +
-          ne.lng +
-          '%29%3B%0A%29%3B%0Aout%20body%3B%0A%3E%3B%0Aout%20skel%20qt%3B';
-        var req = new XMLHttpRequest();
-        req.responseType = 'json';
-        req.open('GET', url, true);
-        req.onload = function () {
-          var jsonResponse = req.response;
-          // document.getElementById("demo").innerHTML = jsonResponse.features;
-          // do something with jsonResponse
-          console.log(jsonResponse);
-          // for each element in jsonResponse.features, create a point and add it to the map
-          var points = [];
-          for (var i = 0; i < jsonResponse.elements.length; i++) {
-            var element = jsonResponse.elements[i];
-            // console.log(element.id);
-
-            // create a point for each element if it is a node. Use the id to match the node to the tags and get the maxweight value from the tags object and add it to the point properties
-            if (element.type == 'node') {
-              var point = {
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: [element.lon, element.lat],
-                },
-              };
-              points.push(point);
-            }
-            if (element.type == 'way') {
-              console.log(element.tags.maxweight);
-              var props = {
-                properties: {
-                  title: element.nodes,
-                },
-              };
-              // points.push(point.props);
-              console.log(props);
-            }
-          }
-
-          // if the source points already exists, update it by setting its data
-          if (map.getSource('points')) {
-            map.getSource('points').setData({
-              type: 'FeatureCollection',
-              features: points,
-            });
-          } else {
-            // otherwise, create a new source
-            map.addSource('points', {
-              type: 'geojson',
-              data: {
-                type: 'FeatureCollection',
-                features: points,
-              },
+          "https://overpass-api.de/api/interpreter?data=%5Bout%3Ajson%5D%5Btimeout%3A25%5D%3B%0A%2F%2F%20gather%20results%0Anwr%5B%22amenity%22%3D%22stripclub%22%5D" +
+          "(" +
+          bbox[1] +
+          "," +
+          bbox[0] +
+          "," +
+          bbox[3] +
+          "," +
+          bbox[2] +
+          ")%3B%0A%2F%2F%20print%20results%0Aout%20geom%3B";
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            // console.log(data);
+            map.addSource("overpass", {
+              type: "geojson",
+              data: data,
             });
             map.addLayer({
-              id: 'points',
-              type: 'circle',
-              source: 'points',
+              id: "overpass",
+              type: "line",
+              source: "overpass",
+              layout: {},
               paint: {
-                'circle-radius': 6,
-                'circle-color': '#bad4ff',
-                'circle-stroke-width': 2,
-                'circle-stroke-color': '#fff',
+                "line-color": "red",
+                "line-width": 2,
               },
             });
-          }
-          // create a popup for each marker and add it to the map
-          points.forEach(function (point) {
-            var popup = new mapboxgl.Popup({ offset: 25 }).setText(
-              'Maxspeed: '
-            );
-            new mapboxgl.Marker()
-              .setLngLat(point.geometry.coordinates)
-              .setPopup(popup)
-              .addTo(map);
           });
-        };
-        req.send();
-      }
-
-      geocoder.on('result', function (ev) {
-        map.panTo(ev.result.center);
-        map.once('moveend', function () {
-          loadGeoJSON();
-        });
       });
     </script>
   </body>
