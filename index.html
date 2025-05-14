@@ -29,6 +29,7 @@
           text-align: center;
           border-radius: 10px;
           opacity: 0.9;
+          width: 320px;
       }
       .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
           border-bottom-color: #333;
@@ -58,7 +59,7 @@
       .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
           border-left-color: #333;
       }
-      img {width: 150px;}
+      img {width: 320px;}
     </style>
   </head>
   <body>
@@ -69,7 +70,7 @@
 
       var map = new mapboxgl.Map({
         container: "map",
-        style: "mapbox://styles/grafa/ck5ediqej18c81ioj4jrgw8su",
+        style: "mapbox://styles/grafa/cmabgkz3h00i801sid88i0f64",
         center: [-122.67143949070442, 45.54722707150694],
         zoom: 11,
         minZoom: 10,
@@ -78,59 +79,106 @@
       // Create a popup, but don't add it to the map yet.
       var popup = new mapboxgl.Popup({
         closeButton: false,
-        closeOnClick: false,
+        closeOnClick: true,
       });
 
-      map.on("click", function (e) {
-        var features = map.queryRenderedFeatures(e.point, {
-          layers: ["cctvinventory"],
+      map.on("load", function (e) {
+        // create an empty GeoJSON source
+        map.addSource("cameras", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features: [],
+          },
         });
-        // Change the cursor style as a UI indicator.
-        var lng = e.lngLat.lng,
-          lat = e.lngLat.lat;
-        var url =
-          "https://api.mapbox.com/directions-matrix/v1/mapbox/driving-traffic/" +
-          lng +
-          "," +
-          lat +
-          ";-122.58458586634072,45.58556897518142?sources=0&destinations=all&access_token=pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w";
+        // get data from ./data/odot-cams.json
+        fetch("./data/odot-cams.json")
+          .then((response) => response.json())
+          .then((data) => {
+            // convert the data to GeoJSON format
+            const geojsonData = {
+              type: "FeatureCollection",
+              features: data.features.map((feature) => ({
+                type: "Feature",
+                geometry: {
+                  type: "Point",
+                  coordinates: [
+                    feature.attributes.longitude,
+                    feature.attributes.latitude,
+                  ],
+                },
+                properties: {
+                  title: feature.attributes.title,
+                  description: `<img src="https://tripcheck.com/RoadCams/cams/${feature.attributes.filename}" alt="${feature.attributes.title}" />`,
+                },
+              })),
+            };
+            // add the data to the map
+            map.getSource("cameras").setData(geojsonData);
 
-        var req = new XMLHttpRequest();
-        req.responseType = "json";
-        req.open("GET", url, true);
-        req.onload = function () {
-          var jsonResponse = req.response;
-          // document.getElementById("demo").innerHTML = jsonResponse.features;
-          // do something with jsonResponse
-          var eta = Math.ceil(jsonResponse.durations[0][1] / 60);
+            // add a layer to visualize the camera locations
+            map.addLayer({
+              id: "cameras",
+              type: "symbol",
+              source: "cameras",
+              layout: {
+                "icon-image": "dot-blue",
+                "icon-size": 0.5,
+                "icon-allow-overlap": true,
+              },
+            });
+            const zoomToCameras = (e) => {
+              // zoom to the camera locations
+              map.flyTo({
+                center: e.lngLat,
+                zoom: 17,
+                bearing: -41,
+                pitch: 59,
+                speed: 2,
+                curve: 1.2,
+                easing(t) {
+                  return t;
+                },
+              });
+            };
 
-          document.getElementById("pop").innerHTML =
-            '<img src=" ' +
-            feature.properties["cctv-url"] +
-            '" /><br><h2>' +
-            eta +
-            " min to PDX ✈</h2>";
-        };
-        req.send();
-        // https://apiportal.odot.state.or.us/api-details#api=tripcheck-api-v1-0&operation=Dms_GetStatus&definition=DmsStatusItem
+            // when a click event occurs on a feature in the cameras layer, open a popup at the location of the feature
+            map.on("click", "cameras", function (e) {
+              var coordinates = e.features[0].geometry.coordinates.slice();
+              var description = e.features[0].properties.description;
 
-        map.getCanvas().style.cursor = features.length ? "pointer" : "";
+              // Ensure that if the map is zoomed out such that multiple
+              // features are visible, the popup appears over the feature
+              // closest to the click event.
+              while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+              }
 
-        if (!features.length) {
-          popup.remove();
-          return;
-        }
+              popup.setLngLat(coordinates).setHTML(description).addTo(map);
+              zoomToCameras(e);
+            });
+            // Reset to default extent when clicking outside the cameras layer
+            map.on("click", function (e) {
+              const features = map.queryRenderedFeatures(e.point, {
+                layers: ["cameras"],
+              });
 
-        var feature = features[0];
-        var coords = feature.geometry.coordinates;
-
-        if (!features.length) {
-          popup.remove();
-          return;
-        }
-        popup.setLngLat(coords).setHTML('<div id ="pop"><div>').addTo(map);
+              if (!features.length) {
+                map.flyTo({
+                  center: [-122.67143949070442, 45.54722707150694], // Default center
+                  zoom: 11, // Default zoom
+                  bearing: 0,
+                  pitch: 0,
+                  speed: 2,
+                  curve: 1.2,
+                  easing(t) {
+                    return t;
+                  },
+                });
+              }
+            });
+          });
       });
     </script>
-    <script src="../bundle.js"></script>
   </body>
 </html>
