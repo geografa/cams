@@ -171,9 +171,10 @@
       var map = new mapboxgl.Map({
         container: "map", // container id
         style: "mapbox://styles/grafa/cm9x8ayjr001101spf68ig361", // stylesheet location
-        center: [-122.64799230300383, 45.51957143168099], // starting position [lng, lat]
-        zoom: 13, // starting zoom
-        minZoom: 9,
+        center: [-119.845166, 39.551179],
+        zoom: 12,
+        bearing: -116,
+        pitch: 62,
         hash: true,
       });
 
@@ -276,9 +277,9 @@
                 "line-cap": "round",
               },
               paint: {
-                "line-color": "#f30",
+                "line-color": "#3886bd",
                 "line-width": 4,
-                "line-opacity": 0.6,
+                "line-opacity": 0.8,
               },
             },
             "controls"
@@ -307,7 +308,7 @@
               "text-keep-upright": false,
             },
             paint: {
-              "text-color": "#ff6e00",
+              "text-color": "#3886bd",
               "text-halo-color": "hsl(55, 11%, 96%)",
               "text-halo-width": 3,
             },
