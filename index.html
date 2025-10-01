@@ -16,50 +16,55 @@
       rel="stylesheet"
     />
     <style>
-      body { margin:0; padding:0; }
+      body {
+        margin: 0;
+        padding: 0;
+      }
       #map {
-          position:absolute;
-          top:0;
-          bottom:0;
-          width: 100%;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
       }
       .mapboxgl-popup-content {
-          background-color: #333;
-          color: #fff;
-          text-align: center;
-          border-radius: 10px;
-          opacity: 0.9;
-          width: 320px;
+        background-color: #333;
+        color: #fff;
+        text-align: center;
+        border-radius: 10px;
+        opacity: 0.9;
+        width: 320px;
       }
       .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
-          border-bottom-color: #333;
+        border-bottom-color: #333;
       }
-      .mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip {;
-          border-left: #333;
-          border-bottom-color: #333;
+      .mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip {
+        border-left: #333;
+        border-bottom-color: #333;
       }
       .mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
-          border-right: #333;
-          border-bottom-color: #333;
+        border-right: #333;
+        border-bottom-color: #333;
       }
       .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
-          border-top-color: #333;
+        border-top-color: #333;
       }
-      .mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip {one;
-          border-left: #333;
-          border-top-color: #333;
+      .mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip {
+        border-left: #333;
+        border-top-color: #333;
       }
-      .mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {ne;
-          border-right: #333;
-          border-top-color: #333;
+      .mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {
+        border-right: #333;
+        border-top-color: #333;
       }
       .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
-          border-right-color: #333;
+        border-right-color: #333;
       }
       .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
-          border-left-color: #333;
+        border-left-color: #333;
       }
-      img {width: 320px;}
+      img {
+        width: 320px;
+      }
     </style>
   </head>
   <body>
@@ -70,7 +75,7 @@
 
       var map = new mapboxgl.Map({
         container: "map",
-        style: "mapbox://styles/grafa/cmabgkz3h00i801sid88i0f64",
+        style: "mapbox://styles/grafa/cmb5lcz4m00hp01sy4uamgt72",
         center: [-122.67143949070442, 45.54722707150694],
         zoom: 11,
         minZoom: 10,
@@ -113,6 +118,7 @@
                 },
               })),
             };
+            console.log(geojsonData);
             // add the data to the map
             map.getSource("cameras").setData(geojsonData);
 
@@ -122,8 +128,16 @@
               type: "symbol",
               source: "cameras",
               layout: {
-                "icon-image": "dot-blue",
-                "icon-size": 0.5,
+                "icon-image": "circle",
+                "icon-size": [
+                  "interpolate",
+                  ["linear"],
+                  ["zoom"],
+                  10,
+                  0.5,
+                  17,
+                  1,
+                ],
                 "icon-allow-overlap": true,
               },
             });
