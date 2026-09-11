@@ -32,7 +32,7 @@ jobs:
       - run: npm run build
         env:
           # Required for maps. Set as a repository variable (Settings → Variables).
-          VITE_MAPBOX_TOKEN: ${{ vars.VITE_MAPBOX_TOKEN }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
 
       - uses: actions/configure-pages@v5
 
