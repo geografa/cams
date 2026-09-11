@@ -52,9 +52,11 @@ Without it, the camera map will not load. The token is read at build time by Vit
 (`import.meta.env.VITE_MAPBOX_TOKEN`). Do not commit `.env.local` — it is
 gitignored.
 
-For production, set the same name as a **repository variable**
-(`Settings → Secrets and variables → Actions → Variables`): `VITE_MAPBOX_TOKEN`.
-The deploy workflow passes it into `npm run build`.
+For production, set `VITE_MAPBOX_TOKEN` under
+**Settings → Secrets and variables → Actions** as either a **Secret** or a
+**Variable** (same name). Do not put it only on the `github-pages` Environment —
+the build job never sees that. The deploy workflow fails fast if the value is
+empty, then passes it into `npm run build`.
 
 ## What’s on the site
 
@@ -115,7 +117,7 @@ Pushing to `main` runs [.github/workflows/deploy.yml](.github/workflows/deploy.y
 **One-time repo setup**
 
 1. Pages source → **GitHub Actions** (`Settings → Pages`), not the old `gh-pages` branch
-2. Repository variable `VITE_MAPBOX_TOKEN` = your Mapbox public token
+2. Actions Secret or Variable `VITE_MAPBOX_TOKEN` = your Mapbox public token
 3. Custom domain / `public/CNAME` already points at `pdxtraffic.com` if DNS is set
 
 You can also trigger a deploy manually with **Actions → Deploy to GitHub Pages → Run workflow**.

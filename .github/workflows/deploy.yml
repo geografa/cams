@@ -29,10 +29,21 @@ jobs:
 
       - run: npm ci
 
+      # Prefer a repo Secret; fall back to a repo Variable. Do not put this on the
+      # github-pages Environment — that env is only attached to the deploy job.
+      - name: Check Mapbox token
+        env:
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN || vars.VITE_MAPBOX_TOKEN }}
+        run: |
+          if [ -z "$VITE_MAPBOX_TOKEN" ]; then
+            echo "::error::VITE_MAPBOX_TOKEN is empty. Add it under Settings → Secrets and variables → Actions as a Secret or Variable named VITE_MAPBOX_TOKEN (not under Environments → github-pages)."
+            exit 1
+          fi
+          echo "VITE_MAPBOX_TOKEN is set (length ${#VITE_MAPBOX_TOKEN})"
+
       - run: npm run build
         env:
-          # Required for maps. Set as a repository variable (Settings → Variables).
-          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN }}
+          VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN || vars.VITE_MAPBOX_TOKEN }}
 
       - uses: actions/configure-pages@v5
 
