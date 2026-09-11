@@ -1,53 +1,121 @@
 # pdxtraffic.com
 
-Every ODOT traffic camera in Oregon on one map. Deployed to
-[pdxtraffic.com](https://pdxtraffic.com) from GitHub Pages.
+Every ODOT traffic camera in Oregon on one map — all **1,062** of them — plus a
+live Portland road-conditions feed scraped from TripCheck. Built as a Vite +
+React app and deployed to [pdxtraffic.com](https://pdxtraffic.com) via GitHub
+Pages.
+
+Nothing here is official. Camera imagery comes from [ODOT TripCheck](https://www.tripcheck.com/);
+maps come from [Mapbox](https://www.mapbox.com/). This site is affiliated with
+neither.
+
+## Stack
+
+| Piece | Choice |
+| ----- | ------ |
+| App | React 19 + TypeScript + React Router |
+| Build | Vite 8 (Node 22) |
+| Styles | Tailwind CSS v4, custom “Portland Weird” tokens in `src/styles/theme.css` |
+| Maps | `react-map-gl` + Mapbox GL JS |
+| Deploy | GitHub Actions → GitHub Pages |
 
 ## Running it
 
-Requires Node 22 (see `.nvmrc`).
+Requires **Node 22** (see `.nvmrc`).
 
 ```bash
 nvm use
 npm install
-cp .env.example .env.local   # then paste a Mapbox pk. token
+cp .env.example .env.local   # paste a Mapbox public (pk.) token
+npm run fetch-incidents      # optional; refresh Portland road conditions
 npm run dev
 ```
 
-| Script              | What it does                                            |
-| ------------------- | ------------------------------------------------------- |
-| `npm run dev`       | Vite dev server                                         |
-| `npm run build`     | Typecheck, build to `dist/`, copy the 404 SPA fallback  |
-| `npm run preview`   | Serve the production build                              |
-| `npm run typecheck` | Typecheck only                                          |
+| Script | What it does |
+| ------ | ------------ |
+| `npm run dev` | Vite dev server with HMR |
+| `npm run fetch-incidents` | Scrape TripCheck Portland road conditions → `public/data/incidents.json` |
+| `npm run build` | Fetch incidents (`prebuild`), typecheck, build to `dist/`, copy SPA `404.html` |
+| `npm run preview` | Serve the production build locally |
+| `npm run typecheck` | Typecheck only |
 
-## Mapbox token
+### Mapbox token
 
-Set `VITE_MAPBOX_TOKEN` in `.env.local` (see `.env.example`). CI reads the same
-name from a repository variable. Without it, the map will not load.
+Create a public token at [account.mapbox.com/access-tokens](https://account.mapbox.com/access-tokens/)
+and put it in `.env.local`:
 
-## Layout
+```
+VITE_MAPBOX_TOKEN=pk.your_token_here
+```
+
+Without it, the camera map will not load. The token is read at build time by Vite
+(`import.meta.env.VITE_MAPBOX_TOKEN`). Do not commit `.env.local` — it is
+gitignored.
+
+For production, set the same name as a **repository variable**
+(`Settings → Secrets and variables → Actions → Variables`): `VITE_MAPBOX_TOKEN`.
+The deploy workflow passes it into `npm run build`.
+
+## What’s on the site
+
+- **`/`** — Landing: hero, marquee, live-cams teaser, TripCheck incident feed, about
+- **`/cams`** — Full-screen clustered map of every ODOT camera; search by title,
+  filter by route, click a cam for a TripCheck still that refreshes about every 30s
+
+Routes are client-side (React Router). The build copies `index.html` to
+`404.html` so deep links and refreshes work on GitHub Pages.
+
+## Project layout
 
 ```
 src/
   components/
-    layout/    header, footer, page shell
-    ui/        sticker cards, buttons, marquee, rain, dividers
-    map/       MapCanvas wrapper + the camera map and its controls
-    landing/   homepage sections
-  pages/       Home, Cams, 404
-  lib/         Mapbox config, camera data loading, helpers
+    layout/     header, footer, page shell
+    ui/         sticker cards, buttons, marquee, rain, dividers
+    map/        MapCanvas + clustered camera map, popup, search, legend
+    landing/    homepage sections (hero, teaser, traffic feed, about)
+  pages/        Home, Cams, 404
+  lib/          Mapbox config, camera GeoJSON transform, helpers
+  styles/       theme tokens and global CSS
 public/
-  data/        ODOT camera JSON and assorted GeoJSON
-attic/         large imagery nothing references, kept out of the build
+  data/         odot-cams.json, incidents.json, supporting GeoJSON/SVG
+  CNAME         pdxtraffic.com
+scripts/
+  fetch-incidents.mjs   TripCheck Portland road-conditions scraper
+.github/workflows/
+  deploy.yml            build + publish to Pages on push to main
+attic/                  large unused imagery (not part of the app bundle)
 ```
+
+Legacy standalone Mapbox HTML demos may still exist under `public/directions/`,
+`isochrone/`, `map-matching/`, `matrix/`, and `optimization/` on a local clone.
+Those directories are **gitignored** (they contain hardcoded Mapbox tokens that
+trip GitHub push protection) and are not part of the published site.
+
+## Data
+
+| File | Source | Used for |
+| ---- | ------ | -------- |
+| `public/data/odot-cams.json` | ODOT / TripCheck camera inventory (Esri FeatureSet) | Camera map markers |
+| `public/data/incidents.json` | Generated by `scripts/fetch-incidents.mjs` from TripCheck Portland road conditions | Homepage traffic feed |
+| TripCheck cam JPEGs | `https://tripcheck.com/RoadCams/cams/…` | Popup stills (fetched in the browser) |
+
+`npm run build` always refreshes `incidents.json` via `prebuild` so production
+stays roughly current with TripCheck. Camera inventory is checked in as static
+JSON and updated manually when needed.
 
 ## Deploying
 
-Pushing to `main` triggers
-[.github/workflows/deploy.yml](.github/workflows/deploy.yml), which builds and
-publishes to GitHub Pages. The repository's Pages source must be set to
-**GitHub Actions** (Settings → Pages), not the old `gh-pages` branch.
+Pushing to `main` runs [.github/workflows/deploy.yml](.github/workflows/deploy.yml):
 
-Camera imagery comes from ODOT TripCheck. Maps and routing come from Mapbox.
-This site is affiliated with neither.
+1. `npm ci` + `npm run build` (with `VITE_MAPBOX_TOKEN` from repo variables)
+2. Upload `dist/` as a Pages artifact
+3. Deploy with `actions/deploy-pages`
+
+**One-time repo setup**
+
+1. Pages source → **GitHub Actions** (`Settings → Pages`), not the old `gh-pages` branch
+2. Repository variable `VITE_MAPBOX_TOKEN` = your Mapbox public token
+3. Custom domain / `public/CNAME` already points at `pdxtraffic.com` if DNS is set
+
+You can also trigger a deploy manually with **Actions → Deploy to GitHub Pages → Run workflow**.

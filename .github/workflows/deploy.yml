@@ -31,7 +31,7 @@ jobs:
 
       - run: npm run build
         env:
-          # Optional. Falls back to the public token baked into src/lib/mapbox.ts.
+          # Required for maps. Set as a repository variable (Settings → Variables).
           VITE_MAPBOX_TOKEN: ${{ vars.VITE_MAPBOX_TOKEN }}
 
       - uses: actions/configure-pages@v5
