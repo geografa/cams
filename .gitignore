@@ -1,7 +1,18 @@
 /_site
+dist/
 .DS_Store
 .vscode
 node_modules/
-package-lock.json
-package.json
 archive/
+*.local
+.env
+.env.local
+.env.*.local
+
+# Legacy Mapbox HTML demos (hardcoded pk. tokens trip GitHub push protection).
+# Kept on disk for local browsing; not published with the React app for now.
+public/directions/
+public/isochrone/
+public/map-matching/
+public/matrix/
+public/optimization/

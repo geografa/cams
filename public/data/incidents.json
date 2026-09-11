@@ -1,0 +1,208 @@
+{
+  "source": "https://www.tripcheck.com/DynamicReports/Report/RoadConditions/16",
+  "region": "Portland",
+  "fetchedAt": "2026-09-11T19:42:50.673Z",
+  "count": 25,
+  "incidents": [
+    {
+      "id": "I-5: SB MP 301.5 to 303 · I-5, 1 mile South of I-405 North Interchange|Construction Work|No to Minimum Delay",
+      "location": "I-5: SB MP 301.5 to 303 · I-5, 1 mile South of I-405 North Interchange",
+      "type": "Construction Work",
+      "impact": "No to Minimum Delay",
+      "severity": 7,
+      "body": "Traffic Impacts: Full closure of I-5 southbound. • 24/7 closure of I-5 southbound between Exit 302A to Broadway and the I-84 westbound on-ramp to I-5 southbound starting September 11 and continuing for up to five weeks. One lane of I-5 southbound will be open between the junction at I-405 and the Broadway exit for local and event center access. Closure will begin at approximately 10 p.m. on September 11 – some ramps "
+    },
+    {
+      "id": "ORE141: MP 7.07 to 3.3 · ORE141, Tigard|Construction Work|No to Minimum Delay",
+      "location": "ORE141: MP 7.07 to 3.3 · ORE141, Tigard",
+      "type": "Construction Work",
+      "impact": "No to Minimum Delay",
+      "severity": 7,
+      "body": "Traffic Impacts: no impacts Project Description: In partnership with the City of Tigard and Washington County, we are working on a project to enhance safety on Hall Boulevard (Oregon Hwy 141). This project will install two new enhanced pedestrian crossings, or Rectangular Rapid Flashing Beacons, across SW Hall Boulevard at the intersections of SW Hemlock and SW Spruce streets. [Link to Additional Information](https:/"
+    },
+    {
+      "id": "ORE141: MP 7.07 to 5.01 · ORE141, Tigard|Construction Work|No to Minimum Delay",
+      "location": "ORE141: MP 7.07 to 5.01 · ORE141, Tigard",
+      "type": "Construction Work",
+      "impact": "No to Minimum Delay",
+      "severity": 7,
+      "body": "Traffic Impacts: Daytime lane shifts and sidewalk closures with accessible pedestrian detours on Hall Blvd. and 72nd Ave. Traffic holds of up to 20 mi [Link to Additional Information](https://www.oregon.gov/odot/projects/pages/project-details.aspx?project=22431)"
+    },
+    {
+      "id": "ORE8: WB MP 2.91 to 7.29 · ORE8, Highway 217|Construction Work|No to Minimum Delay",
+      "location": "ORE8: WB MP 2.91 to 7.29 · ORE8, Highway 217",
+      "type": "Construction Work",
+      "impact": "No to Minimum Delay",
+      "severity": 7,
+      "body": "Traffic Impacts: No Impacts. Work is temporarily suspended. We are installing new overhead and underground fiber optic cable where gaps exist along OR 8 between SW 198th Avenue and OR 217. [Link to Additional Information](https://www.oregon.gov/odot/projects/pages/project-details.aspx?project=21617)"
+    },
+    {
+      "id": "I-405: MP 0 · I-405, Interstate 5|Commercial Vehicle Information|Future Event: Informational only",
+      "location": "I-405: MP 0 · I-405, Interstate 5",
+      "type": "Commercial Vehicle Information",
+      "impact": "Future Event: Informational only",
+      "severity": 0,
+      "body": "Alert: I-405 SB off-ramp to I-5 SB (Portland) Effective September 26, 2026, the I-405 southbound off-ramp to I-5 southbound will be restricted to 16 feet 00 inches in width at night between the hours of 10 PM & 5 AM. The estimated completion date for this work is September 27, 2026."
+    },
+    {
+      "id": "I-405: MP 0.77 · I-405, 1 mile North of Interstate 5|Commercial Vehicle Information|Future Event: Informational only",
+      "location": "I-405: MP 0.77 · I-405, 1 mile North of Interstate 5",
+      "type": "Commercial Vehicle Information",
+      "impact": "Future Event: Informational only",
+      "severity": 0,
+      "body": "Alert: I-405 SB off-ramp to I-5 NB Marquam Bridge (Portland) Effective September 24, 2026, the I-405 southbound off-ramp to I-5 northbound Marquam Bridge will be restricted to 16 feet 00 inches in width at night between the hours of 10 PM & 5 AM. The estimated completion date for this work is September 25, 2026."
+    },
+    {
+      "id": "I-5: MP 299.52 · I-5, 1 mile North of I-405 South Interchange|Commercial Vehicle Information|Future Event: Informational only",
+      "location": "I-5: MP 299.52 · I-5, 1 mile North of I-405 South Interchange",
+      "type": "Commercial Vehicle Information",
+      "impact": "Future Event: Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 NB Exit 299B off-ramp to I-405 NB (Portland) Effective September 26, 2026, the I-5 northbound Exit 299B off-ramp to I-405 northbound will be restricted to 16 feet 00 inches in width at night between the hours of 10 PM & 5 AM. The estimated completion date for this work is September 27, 2026."
+    },
+    {
+      "id": "I-5: MP 300.06 to 300.08 · I-5, 1 mile South of Interstate 84|Commercial Vehicle Information|Future Event: Informational only",
+      "location": "I-5: MP 300.06 to 300.08 · I-5, 1 mile South of Interstate 84",
+      "type": "Commercial Vehicle Information",
+      "impact": "Future Event: Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 NB MP 300.06 off-ramp to I-5 NB Marquam Bridge (Portland) Effective September 25, 2026, the I-5 northbound MP 300.06 off-ramp to I-5 northbound Marquam Bridge will be restricted to 16 feet 00 inches in width at night between the hours of 10 PM & 5 AM. The estimated completion date for this work is September 26, 2026."
+    },
+    {
+      "id": "I-5: MP 300.36 to 299.75 · I-5, 1 mile South of Interstate 84|Commercial Vehicle Information|Future Event: Informational only",
+      "location": "I-5: MP 300.36 to 299.75 · I-5, 1 mile South of Interstate 84",
+      "type": "Commercial Vehicle Information",
+      "impact": "Future Event: Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 SB MP 299.75 to MP 300.36 (Portland) Effective September 21, 2026, this section of I-5 southbound will be closed at night between the hours of 10 PM & 5 AM. The estimated completion date for this work is September 24, 2026."
+    },
+    {
+      "id": "I-5: MP 300.88 to 301.1 · I-5, Interstate 84|Commercial Vehicle Information|Future Event: Informational only",
+      "location": "I-5: MP 300.88 to 301.1 · I-5, Interstate 84",
+      "type": "Commercial Vehicle Information",
+      "impact": "Future Event: Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 NB Exit 300 off-ramp to SE Water Ave (Portland) Effective Sunday October 4, 2026, the I-5 northbound Exit 300 off-ramp to SE Water Avenue will be closed between the hours of 6 AM & 2:30 PM. The estimated completion date for the Portland Marathon Event is Sunday October 4, 2026."
+    },
+    {
+      "id": "I-5: MP 301.35 to 300.89 · I-5, Interstate 84|Commercial Vehicle Information|Informational only",
+      "location": "I-5: MP 301.35 to 300.89 · I-5, Interstate 84",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 SB MP 301.35 to MP 300.89 (Portland) Effective June 23, 2026, this section of I-5 southbound will be restricted to 14 feet 00 inches in width Sunday through Thursday nights between 10 PM & 5 AM, and Friday through Saturday nights between 10 PM & 6 AM. The estimated completion date for this work is October 14, 2026."
+    },
+    {
+      "id": "I-5: MP 301.35 to 300.89 · I-5, Interstate 84|Commercial Vehicle Information|Informational only",
+      "location": "I-5: MP 301.35 to 300.89 · I-5, Interstate 84",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 SB MP 301.35 to MP 300.89 (Portland) Effective June 23, 2026, this section of I-5 southbound will be restricted to 14 feet 11 inches in height Sunday through Thursday nights between 10 PM & 5 AM, and Friday through Saturday nights between 10 PM & 6 AM. The estimated completion date for this work is October 14, 2026."
+    },
+    {
+      "id": "I-5: MP 301.35 to 303.47 · I-5, Interstate 84|Commercial Vehicle Information|Informational only",
+      "location": "I-5: MP 301.35 to 303.47 · I-5, Interstate 84",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 SB MP 301.35 to MP 303.47 (Portland) Effective September 11, 2026, this section of I-5 southbound will be closed at all hours. The estimated completion date for this work is October 16, 2026."
+    },
+    {
+      "id": "I-5: MP 301.5 to 302.7 · I-5, 1 mile South of I-405 North Interchange|Commercial Vehicle Information|Informational only",
+      "location": "I-5: MP 301.5 to 302.7 · I-5, 1 mile South of I-405 North Interchange",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 SB MP 302.70 to MP 301.50 (Portland) Effective January 30, 2026, this section of I-5 southbound will be restricted to 14 feet 00 inches in width Sunday night thru Friday night between the hours of 10 PM and 5 AM and Saturday night between the hours of 10 PM and 8 AM. Loads wider than 14 feet 00 inches may be accommodated on a case-by-case basis. Contact the Over-Dimension Permit Unit for information. The e"
+    },
+    {
+      "id": "I-5: MP 301.58 · I-5, I-405 North Interchange|Commercial Vehicle Information|Informational only",
+      "location": "I-5: MP 301.58 · I-5, I-405 North Interchange",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 SB MP 301.58 (Portland) Effective May 7, 2026, this section of I-5 southbound will be restricted to 14 feet 7 inches in height Sunday through Thursday nights between the hours of 10 PM and 5 AM. Loads over 14 feet 7 inches in height may be accommodated on a case-by-case basis. Contact the Over-Dimension Permit Unit for information. The estimated completion date for this work is October 7, 2026."
+    },
+    {
+      "id": "I-5: MP 301.59 to 301.96 · I-5, I-405 North Interchange|Commercial Vehicle Information|Informational only",
+      "location": "I-5: MP 301.59 to 301.96 · I-5, I-405 North Interchange",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 NB MP 301.59 to MP 301.96 (Portland) Effective June 17, 2026, this section of I-5 northbound will be restricted to 14 feet 00 inches in width Monday through Friday nights between the hours of 10 PM and 5 AM. Loads wider than 14 feet 00 inches may be accommodated on a case-by-case basis. Contact the Over-Dimension Permit Unit for information. The estimated completion date for this work is October 7, 2026."
+    },
+    {
+      "id": "I-5: MP 301.6 to 302.8 · I-5, I-405 North Interchange|Commercial Vehicle Information|Informational only",
+      "location": "I-5: MP 301.6 to 302.8 · I-5, I-405 North Interchange",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 SB MP 302.80 to MP 301.60 (Portland) Effective May 21, 2026, this section of I-5 southbound will be restricted to 14 feet 00 inches in width Monday through Friday nights between the hours of 10 PM and 5 AM. Loads wider than 14 feet 00 inches may be accommodated on a case-by-case basis. Contact the Over-Dimension Permit Unit for information. The estimated completion date for this work is October 7, 2026."
+    },
+    {
+      "id": "I-5: MP 301.91 · I-5, I-405 North Interchange|Commercial Vehicle Information|Informational only",
+      "location": "I-5: MP 301.91 · I-5, I-405 North Interchange",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 SB Exit 301 off-ramp to I-84 EB (Portland) Effective June 26, 2026, the I-5 southbound Exit 301 off-ramp to I-84 eastbound will be restricted to 13 feet 00 inches in width at all hours. The estimated completion date for this work is October 31, 2026."
+    },
+    {
+      "id": "I-5: MP 302.33 · I-5, I-405 North Interchange|Commercial Vehicle Information|Informational only",
+      "location": "I-5: MP 302.33 · I-5, I-405 North Interchange",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 SB MP 302.33 (Portland) Effective May 7, 2026, this section of I-5 southbound will be restricted to 16 feet 2 inches in height Sunday through Thursday nights between the hours of 10 PM and 5 AM. Loads over 16 feet 2 inches in height may be accommodated on a case-by-case basis. Contact the Over-Dimension Permit Unit for information. The estimated completion date for this work is October 7, 2026."
+    },
+    {
+      "id": "I-5: MP 302.98 to 303.45 · I-5, 1 mile North of I-405 North Interchange|Commercial Vehicle Information|Informational only",
+      "location": "I-5: MP 302.98 to 303.45 · I-5, 1 mile North of I-405 North Interchange",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 NB MP 302.98 to MP 303.45 (Portland) Effective August 28, 2026, this section of I-5 northbound will be restricted to 14 feet 00 inches in width Sunday night thru Thursday night between the hours of 10 PM and 5 AM and Friday night between the hours of 10 PM and 7 AM and Saturday night between the hours of 10 PM and 8 AM. Loads wider than 14 feet 00 inches may be accommodated on a case-by-case basis. Contact"
+    },
+    {
+      "id": "I-5: MP 303.15 · I-5, 1 mile South of Portland, Intersection with Going St|Commercial Vehicle Information|Informational only",
+      "location": "I-5: MP 303.15 · I-5, 1 mile South of Portland, Intersection with Going St",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-5 NB MP 303.15 (Portland) Effective August 28, 2026, this section of I-5 northbound will be restricted to 15 feet 7 inches in height Sunday night thru Thursday night between the hours of 10 PM and 5 AM and Friday night between the hours of 10 PM and 7 AM and Saturday night between the hours of 10 PM and 8 AM. Loads over 15 feet 7 inches in height may be accommodated on a case-by-case basis. Contact the Over-"
+    },
+    {
+      "id": "I-84: MP 2 to 2.18 · I-84, Portland, Intersection with 33rd Ave|Commercial Vehicle Information|Informational only",
+      "location": "I-84: MP 2 to 2.18 · I-84, Portland, Intersection with 33rd Ave",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: I-84 EB Exit 1 off-ramp to NE 33rd Avenue (Portland) Effective September 10, 2026, the I-84 eastbound Exit 1 off-ramp to NE 33rd Avenue will be closed during the day, between the hours of 5 AM & 12 PM (noon). The estimated completion date for this work is September 10, 2026."
+    },
+    {
+      "id": "ORE141: MP 5.59 to 5.88 · ORE141, Tigard|Construction Work|Informational only",
+      "location": "ORE141: MP 5.59 to 5.88 · ORE141, Tigard",
+      "type": "Construction Work",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Traffic Impacts: Shoulder and lane closures with flagging Monday-Friday 9:00 am to 3:00 pm. We're improving safety for people walking, biking or rolling by installing a new pedestrian-activated crossing, known as a Rectangular Rapid Flashing Beacon, on Hall Boulevard (OR 141) at SW Omara Street and upgrading the existing signalized crosswalk at SW Fanno Creek Trail. [Link to Additional Information](https://www.oregon"
+    },
+    {
+      "id": "ORE141: MP 5.59 to 5.88 · ORE141, Tigard|Construction Work|Informational only",
+      "location": "ORE141: MP 5.59 to 5.88 · ORE141, Tigard",
+      "type": "Construction Work",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Traffic Impacts: Shoulder and lane closures with flagging Monday-Friday 9:00 am to 3:00 pm. We're improving safety for people walking, biking or rolling by installing a new pedestrian-activated crossing, known as a Rectangular Rapid Flashing Beacon, on Hall Boulevard (OR 141) at SW Omara Street and upgrading the existing signalized crosswalk at SW Fanno Creek Trail. [Link to Additional Information](https://www.oregon"
+    },
+    {
+      "id": "ORE141: MP 5.59 to 5.88 · ORE141, Tigard|Commercial Vehicle Information|Informational only",
+      "location": "ORE141: MP 5.59 to 5.88 · ORE141, Tigard",
+      "type": "Commercial Vehicle Information",
+      "impact": "Informational only",
+      "severity": 0,
+      "body": "Alert: OR141/Hall Blvd NB & SB MP 5.59 to MP 5.88 (Tigard) Effective July 27, 2026, this section of OR141/Hall Boulevard will be restricted to 12 feet 00 inches in width Monday through Friday between the hours of 9 AM and 3 PM. Loads wider than 12 feet 00 inches may be accommodated on a case-by-case basis. Contact the Over-Dimension Permit Unit for information. The estimated completion date for this work is January 8"
+    }
+  ]
+}

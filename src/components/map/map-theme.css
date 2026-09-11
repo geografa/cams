@@ -1,0 +1,58 @@
+/*
+ * Drags Mapbox's default chrome toward the sticker look: ink outlines, hard
+ * offset shadows, no rounded-glass. Popups stay dark like the original site.
+ */
+
+.mapboxgl-popup-content {
+  padding: 0;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 3px solid #171412;
+  background-color: #171412;
+  color: #fdf6e3;
+  box-shadow: 6px 6px 0 0 rgba(23, 20, 18, 0.35);
+}
+
+.mapboxgl-popup-tip {
+  display: none;
+}
+
+.mapboxgl-popup-close-button {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  color: #fdf6e3;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.mapboxgl-popup-close-button:hover {
+  background-color: #ff4fa3;
+  color: #fdf6e3;
+}
+
+.mapboxgl-ctrl-group {
+  border: 3px solid #171412;
+  border-radius: 10px;
+  box-shadow: 3px 3px 0 0 #171412;
+  background-color: #fdf6e3;
+}
+
+.mapboxgl-ctrl-group button + button {
+  border-top: 2px solid #171412;
+}
+
+.mapboxgl-ctrl-scale {
+  border: 2px solid #171412;
+  border-top: none;
+  border-radius: 0 0 6px 6px;
+  background-color: rgba(253, 246, 227, 0.85);
+  color: #171412;
+  font-family: "DM Mono", ui-monospace, monospace;
+  font-size: 11px;
+}
+
+.mapboxgl-ctrl-attrib {
+  font-family: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  font-size: 11px;
+}

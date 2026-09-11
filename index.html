@@ -1,198 +1,26 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>
-      Live traffic cameras, Portland, OR
-      (http://tripcheck.com/TextPages/CAMreport.asp?curRegion=0)
-    </title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>PDX Traffic — live Oregon cameras, kept weird</title>
     <meta
-      name="viewport"
-      content="initial-scale=1,maximum-scale=1,user-scalable=no"
+      name="description"
+      content="1,062 live ODOT traffic cameras across Oregon. Made in the rain in Portland."
     />
-    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.js"></script>
-    <link
-      href="https://api.tiles.mapbox.com/mapbox-gl-js/v3.10.0/mapbox-gl.css"
-      rel="stylesheet"
+    <meta name="theme-color" content="#171412" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="PDX Traffic — live Oregon cameras, kept weird" />
+    <meta
+      property="og:description"
+      content="1,062 live ODOT traffic cameras across Oregon. Made in the rain in Portland."
     />
-    <style>
-      body {
-        margin: 0;
-        padding: 0;
-      }
-      #map {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-      }
-      .mapboxgl-popup-content {
-        background-color: #333;
-        color: #fff;
-        text-align: center;
-        border-radius: 10px;
-        opacity: 0.9;
-        width: 320px;
-      }
-      .mapboxgl-popup-anchor-top .mapboxgl-popup-tip {
-        border-bottom-color: #333;
-      }
-      .mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip {
-        border-left: #333;
-        border-bottom-color: #333;
-      }
-      .mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip {
-        border-right: #333;
-        border-bottom-color: #333;
-      }
-      .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
-        border-top-color: #333;
-      }
-      .mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip {
-        border-left: #333;
-        border-top-color: #333;
-      }
-      .mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip {
-        border-right: #333;
-        border-top-color: #333;
-      }
-      .mapboxgl-popup-anchor-left .mapboxgl-popup-tip {
-        border-right-color: #333;
-      }
-      .mapboxgl-popup-anchor-right .mapboxgl-popup-tip {
-        border-left-color: #333;
-      }
-      img {
-        width: 320px;
-      }
-    </style>
+    <meta property="og:url" content="https://pdxtraffic.com/" />
   </head>
   <body>
-    <div id="map"></div>
-    <script>
-      mapboxgl.accessToken =
-        "pk.eyJ1IjoiZ3JhZmEiLCJhIjoiY2pxbjFhMTg1MDJ2MzQ0bXJpZ2c5NjM3eCJ9.XDmc8knZy11F1omDy_P22w";
-
-      var map = new mapboxgl.Map({
-        container: "map",
-        style: "mapbox://styles/grafa/cmb5lcz4m00hp01sy4uamgt72",
-        center: [-122.67143949070442, 45.54722707150694],
-        zoom: 11,
-        minZoom: 10,
-      });
-
-      // Create a popup, but don't add it to the map yet.
-      var popup = new mapboxgl.Popup({
-        closeButton: false,
-        closeOnClick: true,
-      });
-
-      map.on("load", function (e) {
-        // create an empty GeoJSON source
-        map.addSource("cameras", {
-          type: "geojson",
-          data: {
-            type: "FeatureCollection",
-            features: [],
-          },
-        });
-        // get data from ./data/odot-cams.json
-        fetch("./data/odot-cams.json")
-          .then((response) => response.json())
-          .then((data) => {
-            // convert the data to GeoJSON format
-            const geojsonData = {
-              type: "FeatureCollection",
-              features: data.features.map((feature) => ({
-                type: "Feature",
-                geometry: {
-                  type: "Point",
-                  coordinates: [
-                    feature.attributes.longitude,
-                    feature.attributes.latitude,
-                  ],
-                },
-                properties: {
-                  title: feature.attributes.title,
-                  description: `<img src="https://tripcheck.com/RoadCams/cams/${feature.attributes.filename}" alt="${feature.attributes.title}" />`,
-                },
-              })),
-            };
-            console.log(geojsonData);
-            // add the data to the map
-            map.getSource("cameras").setData(geojsonData);
-
-            // add a layer to visualize the camera locations
-            map.addLayer({
-              id: "cameras",
-              type: "symbol",
-              source: "cameras",
-              layout: {
-                "icon-image": "circle",
-                "icon-size": [
-                  "interpolate",
-                  ["linear"],
-                  ["zoom"],
-                  10,
-                  0.5,
-                  17,
-                  1,
-                ],
-                "icon-allow-overlap": true,
-              },
-            });
-            const zoomToCameras = (e) => {
-              // zoom to the camera locations
-              map.flyTo({
-                center: e.lngLat,
-                zoom: 17,
-                bearing: -41,
-                pitch: 59,
-                speed: 2,
-                curve: 1.2,
-                easing(t) {
-                  return t;
-                },
-              });
-            };
-
-            // when a click event occurs on a feature in the cameras layer, open a popup at the location of the feature
-            map.on("click", "cameras", function (e) {
-              var coordinates = e.features[0].geometry.coordinates.slice();
-              var description = e.features[0].properties.description;
-
-              // Ensure that if the map is zoomed out such that multiple
-              // features are visible, the popup appears over the feature
-              // closest to the click event.
-              while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-              }
-
-              popup.setLngLat(coordinates).setHTML(description).addTo(map);
-              zoomToCameras(e);
-            });
-            // Reset to default extent when clicking outside the cameras layer
-            map.on("click", function (e) {
-              const features = map.queryRenderedFeatures(e.point, {
-                layers: ["cameras"],
-              });
-
-              if (!features.length) {
-                map.flyTo({
-                  center: [-122.67143949070442, 45.54722707150694], // Default center
-                  zoom: 11, // Default zoom
-                  bearing: 0,
-                  pitch: 0,
-                  speed: 2,
-                  curve: 1.2,
-                  easing(t) {
-                    return t;
-                  },
-                });
-              }
-            });
-          });
-      });
-    </script>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@import "@fontsource/rubik-dirt/latin-400.css";
+@import "@fontsource/rubik-dirt/latin-ext-400.css";
+@import "@fontsource-variable/space-grotesk";
+@import "@fontsource/dm-mono/latin-400.css";
+@import "@fontsource/dm-mono/latin-500.css";
+
+@theme {
+  --color-ink: #171412;
+  --color-paper: #fdf6e3;
+  --color-rose: #ff4fa3;
+  --color-moss: #14b8a6;
+  --color-fir: #319694;
+  --color-stag: #ffb627;
+  --color-drizzle: #8fa3ad;
+  --color-cascade: #2bb3c0;
+
+  --font-display: "Rubik Dirt", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Space Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "DM Mono", ui-monospace, "SF Mono", monospace;
+
+  --animate-drift: drift 30s linear infinite;
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-bob: bob 4s ease-in-out infinite;
+}
+
+@keyframes drift {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 0 800px;
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes bob {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+
+  50% {
+    transform: translateY(-8px) rotate(2deg);
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    /* Faint riso paper speckle so the cream never reads as flat white. */
+    background-image: radial-gradient(color-mix(in srgb, var(--color-drizzle) 28%, transparent) 0.5px,
+        transparent 0.5px);
+    background-size: 14px 14px;
+  }
+
+  ::selection {
+    background-color: var(--color-rose);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 3px solid var(--color-cascade);
+    outline-offset: 3px;
+  }
+}
+
+@utility ink-border {
+  border: 3px solid var(--color-ink);
+}
+
+/* Hard offset shadow, no blur - the sticker/riso look. */
+@utility shadow-sticker {
+  box-shadow: 6px 6px 0 0 var(--color-ink);
+}
+
+@utility shadow-sticker-sm {
+  box-shadow: 3px 3px 0 0 var(--color-ink);
+}
+
+@utility shadow-sticker-lg {
+  box-shadow: 10px 10px 0 0 var(--color-ink);
+}
+
+@utility text-shadow-sticker {
+  text-shadow: 4px 4px 0 var(--color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
