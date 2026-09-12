@@ -52,6 +52,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link className="hover:text-rose" to="/about">
+                About
+              </Link>
+            </li>
+            <li>
               <a className="hover:text-rose" href="https://github.com/geografa/pdxtraffic">
                 GitHub
               </a>

@@ -22,9 +22,12 @@ export function AboutStrip() {
                 late and the drizzle never quite stops.
               </p>
             </div>
-            <div className="mt-8">
-              <WobblyButton href="https://www.tripcheck.com/" variant="stag">
-                Read the source
+            <div className="mt-8 flex flex-wrap gap-3">
+              <WobblyButton to="/about" variant="stag">
+                More about this
+              </WobblyButton>
+              <WobblyButton href="https://www.tripcheck.com/" variant="paper">
+                TripCheck
               </WobblyButton>
             </div>
           </div>

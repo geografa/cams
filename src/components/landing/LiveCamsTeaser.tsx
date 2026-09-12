@@ -14,11 +14,18 @@ export function LiveCamsTeaser() {
     <section className="mx-auto max-w-6xl px-5 py-20">
       <SectionHeading
         eyebrow="Live from the roadside"
-        title="Every camera ODOT will admit to."
+        title="No Flocking Cameras."
         blurb={
           <>
-            Pulled straight from TripCheck and clustered so your browser
-            survives it. Click a dot and the map swoops down to the roadside.
+            Pulled straight from ODOT TripCheck and clustered so your browser
+            survives it. Click a dot and watch the mayhem. Read the{" "}
+            <Link
+              to="/about"
+              className="font-display text-l text-moss underline decoration-wavy decoration-rose underline-offset-8 hover:text-rose"
+            >
+              About
+            </Link>{" "}
+            page for more info on how TripCheck cameras work.
           </>
         }
       />

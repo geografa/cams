@@ -5,6 +5,7 @@ import { cn } from "../../lib/cn";
 const NAV = [
   { to: "/", label: "Home", end: true },
   { to: "/cams", label: "Live Cams" },
+  { to: "/about", label: "About" },
 ];
 
 function Wordmark() {
