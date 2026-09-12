@@ -32,8 +32,8 @@ function formatFetchedAt(iso: string): string {
 }
 
 /**
- * Custom TripCheck incident feed — the same source @TripCheckPDX uses for
- * #pdxtraffic, rendered without X's broken search/profile embeds.
+ * TripCheck incident feed from the official Data API (build-time fetch),
+ * same alerts travelers see on TripCheck / @TripCheckPDX.
  */
 export function TrafficFeed() {
   const [feed, setFeed] = useState<FeedPayload | null>(null);
@@ -62,7 +62,7 @@ export function TrafficFeed() {
         <div>
           <p className="font-display text-lg leading-none">TripCheck alerts</p>
           <p className="mt-1 font-mono text-[10px] uppercase tracking-widest text-drizzle">
-            Portland · same source as #pdxtraffic
+            Portland · TripCheck Data API
           </p>
         </div>
         <a
@@ -90,7 +90,7 @@ export function TrafficFeed() {
 
         {feed && feed.incidents.length === 0 && (
           <p className="px-4 py-8 font-mono text-xs uppercase tracking-widest text-drizzle">
-            No active Portland alerts right now. Weirdly peaceful.
+            No active alerts right now. Weirdly peaceful.
           </p>
         )}
 
@@ -132,12 +132,12 @@ export function TrafficFeed() {
             : "Waiting on TripCheck"}
         </span>
         <a
-          href="https://www.tripcheck.com/DynamicReports/Report/RoadConditions/16"
+          href="https://www.tripcheck.com/"
           target="_blank"
           rel="noreferrer"
           className="text-stag underline decoration-dotted underline-offset-4"
         >
-          Full report →
+          TripCheck →
         </a>
       </div>
     </div>

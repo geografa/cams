@@ -48,12 +48,17 @@ export function SiteHeader() {
 
         <nav className="hidden items-center gap-1 sm:flex" aria-label="Main">
           {NAV.map((item) => (
-            <NavLink key={item.to} to={item.to} end={item.end} className={navClasses}>
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={navClasses}
+            >
               {item.label}
             </NavLink>
           ))}
           <a
-            href="https://github.com/geografa/cams"
+            href="https://www.tripcheck.com/"
             className="ml-2 rounded-full px-4 py-2 font-display text-lg transition-all hover:-rotate-2 hover:bg-cascade hover:ink-border hover:shadow-sticker-sm"
           >
             Source
