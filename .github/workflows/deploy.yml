@@ -54,6 +54,7 @@ jobs:
       - run: npm run build
         env:
           VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN || vars.VITE_MAPBOX_TOKEN }}
+          VITE_PLAUSIBLE_DOMAIN: ${{ vars.VITE_PLAUSIBLE_DOMAIN || 'pdxtraffic.com' }}
           TRIPCHECK_API_KEY: ${{ secrets.TRIPCHECK_API_KEY }}
 
       - uses: actions/configure-pages@v5

@@ -7,6 +7,7 @@ import Map, {
 } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "./map-theme.css";
+import { trackEvent } from "../../lib/analytics";
 import { MAPBOX_TOKEN, MAP_STYLE, DEFAULT_VIEW } from "../../lib/mapbox";
 
 type MapProps = ComponentProps<typeof Map>;
@@ -28,6 +29,7 @@ export function MapCanvas({
   children,
   controls = true,
   style,
+  onLoad,
   ...props
 }: Props) {
   return (
@@ -38,6 +40,10 @@ export function MapCanvas({
       style={{ width: "100%", height: "100%", ...style }}
       reuseMaps
       {...props}
+      onLoad={(e) => {
+        trackEvent("Map Load");
+        onLoad?.(e);
+      }}
     >
       {controls && (
         <>

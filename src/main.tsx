@@ -1,7 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
+import { initAnalytics } from "./lib/analytics";
 import "./styles/theme.css";
+
+initAnalytics();
 
 const container = document.getElementById("root");
 if (!container) throw new Error("Missing #root element");
