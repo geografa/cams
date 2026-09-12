@@ -18,15 +18,15 @@ const clusterLayer: LayerProps = {
     "circle-color": [
       "step",
       ["get", "point_count"],
-      "#FFB627", // stag, small huddles
-      25,
       "#2BB3C0", // cascade
+      25,
+      "#FFB627", // stag, small huddles
       100,
       "#FF4FA3", // rose, the big interchanges
     ],
     "circle-radius": ["step", ["get", "point_count"], 16, 25, 22, 100, 30],
-    "circle-stroke-width": 3,
-    "circle-stroke-color": "#171412",
+    // "circle-stroke-width": 2.5,
+    // "circle-stroke-color": "#171412",
   },
 };
 
@@ -50,10 +50,10 @@ const pointLayer: LayerProps = {
   source: CAMERA_SOURCE_ID,
   filter: ["!", ["has", "point_count"]],
   paint: {
-    "circle-color": "#FF4FA3",
+    "circle-color": "#2BB3C0",
     "circle-radius": ["interpolate", ["linear"], ["zoom"], 10, 5, 17, 11],
-    "circle-stroke-width": 2.5,
-    "circle-stroke-color": "#FDF6E3",
+    "circle-stroke-width": 1,
+    "circle-stroke-color": "#333",
   },
 };
 

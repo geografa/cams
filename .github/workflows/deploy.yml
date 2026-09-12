@@ -41,9 +41,20 @@ jobs:
           fi
           echo "VITE_MAPBOX_TOKEN is set (length ${#VITE_MAPBOX_TOKEN})"
 
+      - name: Check TripCheck API key
+        env:
+          TRIPCHECK_API_KEY: ${{ secrets.TRIPCHECK_API_KEY }}
+        run: |
+          if [ -z "$TRIPCHECK_API_KEY" ]; then
+            echo "::error::TRIPCHECK_API_KEY is empty. Add it under Settings → Secrets and variables → Actions as a Secret named TRIPCHECK_API_KEY (repository secret, not an Environment secret)."
+            exit 1
+          fi
+          echo "TRIPCHECK_API_KEY is set (length ${#TRIPCHECK_API_KEY})"
+
       - run: npm run build
         env:
           VITE_MAPBOX_TOKEN: ${{ secrets.VITE_MAPBOX_TOKEN || vars.VITE_MAPBOX_TOKEN }}
+          TRIPCHECK_API_KEY: ${{ secrets.TRIPCHECK_API_KEY }}
 
       - uses: actions/configure-pages@v5
 

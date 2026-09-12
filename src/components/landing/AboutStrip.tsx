@@ -23,10 +23,7 @@ export function AboutStrip() {
               </p>
             </div>
             <div className="mt-8">
-              <WobblyButton
-                href="https://github.com/geografa/pdxtraffic"
-                variant="stag"
-              >
+              <WobblyButton href="https://www.tripcheck.com/" variant="stag">
                 Read the source
               </WobblyButton>
             </div>
@@ -44,7 +41,9 @@ export function AboutStrip() {
                 key={k}
                 className="flex items-baseline justify-between gap-4 border-b border-dashed border-paper/30 pb-3"
               >
-                <span className="uppercase tracking-widest text-paper/60">{k}</span>
+                <span className="uppercase tracking-widest text-paper/60">
+                  {k}
+                </span>
                 <span className="text-right text-stag">{v}</span>
               </li>
             ))}
